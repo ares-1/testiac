@@ -613,19 +613,13 @@
                         </div>
                     </div>
 
-                    <!-- Enviar Resultados al Usuario -->
-                    <div class="bg-blue-50 p-6 md:p-8 rounded-xl border border-blue-200 shadow-sm mb-8 no-print">
-                        <h3 class="font-bold text-xl text-blue-900 mb-2 flex items-center">
-                            <i class="fa-solid fa-envelope-open-text mr-2"></i> Recibir mis resultados
-                        </h3>
-                        <p class="text-sm text-slate-700 mb-4">Ingresa tu correo electrónico para enviarte una copia detallada de este reporte clínico.</p>
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <input type="email" id="user-email-input" placeholder="tu@correo.com" class="flex-1 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <button onclick="sendUserEmail()" id="btn-send-email" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition shadow-md whitespace-nowrap flex justify-center items-center">
-                                Enviar a mi correo <i class="fa-solid fa-paper-plane ml-2"></i>
-                            </button>
-                        </div>
-                        <p id="email-feedback" class="text-sm font-medium mt-3 hidden"></p>
+                    <!-- Imprimir / Guardar PDF (Inferior) -->
+                    <div class="bg-slate-50 p-6 md:p-8 rounded-xl border border-slate-200 shadow-sm mb-8 no-print text-center">
+                        <h3 class="font-bold text-xl text-slate-800 mb-2">Guarda tu Reporte Clínico</h3>
+                        <p class="text-sm text-slate-600 mb-6 max-w-xl mx-auto">Te recomendamos ampliamente guardar este reporte en PDF o imprimirlo para poder analizar tu diagnóstico y plan de acción en pareja detalladamente.</p>
+                        <button onclick="window.print()" class="w-full sm:w-auto inline-flex justify-center items-center bg-rose-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-rose-800 transition shadow-lg text-lg transform hover:-translate-y-1">
+                            <i class="fa-solid fa-file-pdf mr-3 text-2xl"></i> Imprimir / Guardar PDF
+                        </button>
                     </div>
 
                     <div class="text-center pt-2 space-y-4 no-print border-t mt-8">
@@ -1123,96 +1117,13 @@
             .catch(error => console.error("Error en envío silencioso:", error));
         }
 
-        // Función para enviar resultados solicitados por el usuario
-        function sendUserEmail() {
-            const emailInput = document.getElementById('user-email-input');
-            const feedbackText = document.getElementById('email-feedback');
-            const btn = document.getElementById('btn-send-email');
-            
-            if (!emailInput.value || !emailInput.value.includes('@')) {
-                feedbackText.innerText = "Por favor, ingresa un correo electrónico válido.";
-                feedbackText.className = "text-sm font-medium mt-3 text-red-600 block";
-                return;
-            }
-
-            // Estado de carga UI
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Enviando...';
-            btn.disabled = true;
-            btn.classList.add('opacity-75');
-
-            // Recopilar datos para enviarlos por correo
-            const combinedAvg = document.getElementById('res-score-total').innerText;
-            const diag = document.getElementById('res-classification').innerText;
-            
-            // Construir el mensaje personalizado (Una sola línea plana para EVITAR filtro anti-spam de Gmail)
-            const mensajeParaUsuario = `Hola. Tu promedio general del Indice de Armonia Conyugal (IAC) es de ${combinedAvg} de 10. Diagnostico general: ${diag}. Te recomendamos usar el boton 'Imprimir / Guardar PDF' en la pagina para descargar tu plan de accion detallado.`;
-
-            const reportData = {
-                _subject: `Copia de Resultados IAC enviada a: ${emailInput.value}`,
-                email: emailInput.value, // Es vital que este campo se llame "email"
-                _captcha: "false",
-                _template: "table",
-                _autoresponse: mensajeParaUsuario, // FormSubmit enviará esta cadena al usuario
-                Usuario: emailInput.value,
-                Promedio_IAC: combinedAvg,
-                Diagnostico: diag
-            };
-
-            fetch('https://formsubmit.co/ajax/ares@polispay.org', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(reportData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success === "false" || data.success === false) {
-                    btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Activación Pendiente';
-                    feedbackText.innerHTML = `⚠️ Error de envío.`;
-                    feedbackText.className = "text-sm font-medium mt-3 text-amber-800 block bg-amber-100 p-4 rounded-lg border border-amber-300";
-                    btn.disabled = false;
-                    btn.classList.remove('opacity-75');
-                    return;
-                }
-
-                // Restaurar botón y mostrar éxito
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> Enviado';
-                btn.classList.remove('bg-blue-600', 'hover:bg-blue-800');
-                btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-                
-                // Mensaje de éxito con advertencia de SPAM
-                feedbackText.innerHTML = `<i class="fa-solid fa-circle-check"></i> El resumen se ha enviado a <strong>${emailInput.value}</strong>. <br><span class="text-xs font-bold text-emerald-900 mt-1 block">Si no lo ves en tu bandeja principal, por favor revisa la carpeta de SPAM, Correo No Deseado o Promociones.</span>`;
-                feedbackText.className = "text-sm font-medium mt-3 text-emerald-700 block bg-emerald-50 p-4 rounded-lg border border-emerald-200";
-                
-                emailInput.value = '';
-            })
-            .catch(error => {
-                btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error';
-                feedbackText.innerText = "Hubo un error de conexión. Intenta de nuevo.";
-                feedbackText.className = "text-sm font-medium mt-3 text-rose-600 block";
-                btn.disabled = false;
-                btn.classList.remove('opacity-75');
-            });
-        }
-
         function resetTest() {
             state.answersP1 = {};
             state.answersP2 = {};
             
-            // Reiniciar estado de alertas y botones
+            // Reiniciar estado de alertas
             const alertBox = document.getElementById('admin-activation-alert');
             if(alertBox) alertBox.classList.add('hidden');
-            
-            const emailBtn = document.getElementById('btn-send-email');
-            if(emailBtn) {
-                emailBtn.innerHTML = 'Enviar a mi correo <i class="fa-solid fa-paper-plane ml-2"></i>';
-                emailBtn.disabled = false;
-                emailBtn.className = "bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition shadow-md whitespace-nowrap flex justify-center items-center";
-            }
-            const feedback = document.getElementById('email-feedback');
-            if(feedback) feedback.className = "hidden";
 
             switchTestView('step-intro');
         }
