@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Índice de Armonía Conyugal (IAC)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 700: '#0369a1', 900: '#0c4a6e' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .score-radio:checked + label {
+            background-color: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+            transform: scale(1.1);
+        }
+        .score-label { transition: all 0.2s ease-in-out; }
+        .score-label:hover { background-color: #e0f2fe; border-color: #0ea5e9; }
+        
+        /* View transitions */
+        .view-section { display: none; opacity: 0; transition: opacity 0.4s ease; }
+        .view-section.active { display: block; opacity: 1; animation: fadeIn 0.4s; }
+        
+        .smooth-hide { display: none; opacity: 0; }
+        .smooth-show { display: block; opacity: 1; animation: fadeIn 0.5s; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background-color: white; color: black; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .view-section { display: none !important; opacity: 1 !important; }
+            #view-test { display: block !important; } 
+            #step-results { display: block !important; opacity: 1 !important; box-shadow: none !important; border: none !important; }
+            #step-intro, #step-questions, #step-interstitial { display: none !important; }
+            .shadow-lg, .shadow-sm, .shadow-xl { box-shadow: none !important; }
+            .print-break { page-break-before: always; display: block; }
+            .bg-slate-800 { background-color: #f1f5f9 !important; color: #1e293b !important; border: 1px solid #cbd5e1; }
+            .bg-brand-50, .bg-emerald-50, .bg-blue-50, .bg-amber-50, .bg-rose-50 { background-color: transparent !important; border: 1px solid #e2e8f0; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+
+        /* Marker para el promedio de México */
+        .mx-marker {
+            position: absolute;
+            top: -4px;
+            bottom: -4px;
+            width: 3px;
+            background-color: #1e293b;
+            z-index: 10;
+            border-radius: 2px;
+            box-shadow: 0 0 2px rgba(255,255,255,0.8);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- Navbar (No Print) -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-2 text-brand-900 cursor-pointer" onclick="navigate('view-home')">
+                    <i class="fa-solid fa-rings-wedding text-2xl"></i>
+                    <span class="font-serif font-bold text-xl hidden sm:block">Índice de Armonía Conyugal</span>
+                    <span class="font-serif font-bold text-xl sm:hidden">IAC</span>
+                </div>
+                <div class="flex space-x-1 sm:space-x-4 overflow-x-auto">
+                    <button onclick="navigate('view-home')" id="nav-view-home" class="nav-btn px-3 py-2 text-sm font-medium rounded-md text-brand-700 bg-brand-50">Inicio</button>
+                    <button onclick="navigate('view-theory')" id="nav-view-theory" class="nav-btn px-3 py-2 text-sm font-medium rounded-md text-slate-500 hover:text-brand-700 hover:bg-slate-50">Fundamentación</button>
+                    <button onclick="navigate('view-tables')" id="nav-view-tables" class="nav-btn px-3 py-2 text-sm font-medium rounded-md text-slate-500 hover:text-brand-700 hover:bg-slate-50">Radiografía Social</button>
+                    <button onclick="navigate('view-test')" id="nav-view-test" class="nav-btn px-4 py-2 text-sm font-bold rounded-md bg-brand-700 text-white shadow-md hover:bg-brand-900 transition">Hacer el Test</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= VISTA 1: INICIO ================= -->
+    <section id="view-home" class="view-section active">
+        <!-- Hero -->
+        <div class="bg-brand-900 text-white py-20 px-4">
+            <div class="max-w-4xl mx-auto text-center space-y-6">
+                <h1 class="text-4xl md:text-6xl font-serif font-bold leading-tight">
+                    El Índice de <span class="text-brand-100">Armonía Conyugal</span>
+                </h1>
+                <p class="text-lg md:text-xl text-brand-50 max-w-3xl mx-auto font-light">
+                    Una radiografía profunda de las relaciones modernas. Descubre cómo la dinámica operativa y emocional de tu matrimonio influye directamente en tu felicidad y salud integral.
+                </p>
+                <div class="pt-6">
+                    <button onclick="navigate('view-test')" class="inline-block bg-white text-brand-900 font-bold px-8 py-4 rounded-full shadow-lg hover:bg-brand-50 transition transform hover:-translate-y-1 text-lg">
+                        Iniciar Evaluación de Pareja <i class="fa-solid fa-clipboard-check ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Importancia de la Armonía y Buffering Effect -->
+        <div class="max-w-6xl mx-auto py-16 px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-serif font-bold text-slate-800">El Poder del "Efecto Amortiguador"</h2>
+                <p class="mt-4 text-slate-600 text-lg max-w-3xl mx-auto">
+                    ¿Por qué es vital medir y trabajar en nuestra armonía conyugal? La ciencia ha demostrado que el matrimonio no es solo un contrato social, es una <strong>entidad biológica y psicológica</strong> que afecta directamente nuestra supervivencia y felicidad.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-xl">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">1. Regulación del Sistema Nervioso</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Cuando el Índice de Armonía Conyugal (IAC) es alto, opera un fenómeno estudiado en psicología llamado <strong>"Stress-Buffering Hypothesis" (Efecto Amortiguador)</strong>. Un matrimonio seguro actúa como un "escudo biológico". Ante un evento estresante, la presencia empática de la pareja reduce drásticamente los niveles de cortisol en la sangre.
+                        </p>
+                    </div>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-6 rounded-r-xl">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">2. Carga Cognitiva Compartida</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Una relación armoniosa permite que los cerebros funcionen en red. Frente a un problema, la pareja divide inconscientemente la carga cognitiva. Esto previene el agotamiento mental y la depresión que suele acompañar a los individuos que enfrentan crisis solos.
+                        </p>
+                    </div>
+                    <div class="bg-rose-50 border-l-4 border-rose-500 p-6 rounded-r-xl">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">3. El Peligro del Silencio Crónico</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Por el contrario, un IAC bajo convierte al hogar en la principal <em>fuente</em> de estrés en lugar de ser el <em>refugio</em>. El resentimiento silencioso y la tensión no resuelta generan un estado de "alerta crónica" (fight or flight) que erosiona el sistema inmunológico.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-brand-100 to-blue-50 rounded-full blur-3xl opacity-50"></div>
+                    <div class="relative bg-white p-8 rounded-2xl shadow-xl border border-slate-100 text-center">
+                        <div class="flex justify-center mb-6 relative">
+                            <i class="fa-solid fa-cloud-bolt text-5xl text-slate-400 absolute -top-4 -left-4 opacity-50"></i>
+                            <i class="fa-solid fa-shield-heart text-7xl text-brand-500 relative z-10 drop-shadow-md"></i>
+                            <i class="fa-solid fa-arrow-trend-down text-5xl text-rose-400 absolute -bottom-4 -right-4 opacity-50"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-slate-800 mb-4">Tu Mayor Predictor de Felicidad</h4>
+                        <p class="text-slate-600 leading-relaxed">
+                            Numerosos estudios longitudinales concluyen que la calidad de la relación conyugal es el <strong>predictor número uno del bienestar subjetivo</strong> en adultos, superando variables como el nivel de ingresos, el éxito profesional o el estatus social. Un hogar en armonía es la inversión más rentable para la salud mental.
+                        </p>
+                        <button onclick="navigate('view-theory')" class="mt-6 text-brand-600 font-bold hover:text-brand-800 underline">
+                            Conoce la ciencia detrás de esto <i class="fa-solid fa-arrow-right text-sm ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= VISTA 2: FUNDAMENTACIÓN ================= -->
+    <section id="view-theory" class="view-section py-16 px-4 bg-slate-50">
+        <div class="max-w-5xl mx-auto space-y-16">
+            
+            <div class="text-center">
+                <h2 class="text-4xl font-serif font-bold text-slate-800">Marco Teórico y Científico</h2>
+                <p class="mt-4 text-slate-600 text-lg">Las bases psicológicas, sociológicas y biológicas detrás de nuestra evaluación de pareja.</p>
+            </div>
+
+            <!-- Efecto Amortiguador -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-10 border-t-4 border-t-brand-500">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">1. La Hipótesis de la Amortiguación del Estrés</h3>
+                <p class="text-sm text-brand-700 font-medium mb-4">Autores: <a href="https://en.wikipedia.org/wiki/Sheldon_Cohen_(psychologist)" target="_blank" class="hover:underline text-brand-600">Sheldon Cohen</a> & Thomas Wills (1985) | <a href="https://en.wikipedia.org/wiki/Janice_Kiecolt-Glaser" target="_blank" class="hover:underline text-brand-600">Dra. Janice Kiecolt-Glaser</a> (2001)</p>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    La <em>Stress-Buffering Hypothesis</em> postula que el apoyo social percibido protege a los individuos de los efectos patogénicos de los eventos estresantes. En el contexto matrimonial, esto adquiere su máxima expresión. No se trata solo de "sentirse querido", sino de un mecanismo psicofisiológico.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Las investigaciones de la Dra. Kiecolt-Glaser demostraron que las parejas que discuten de manera hostil (bajo IAC) muestran reducciones significativas en su función inmunológica y una curación de heridas físicas un 40% más lenta que las parejas que gestionan bien sus conflictos. **La armonía conyugal, por lo tanto, no es un lujo romántico, es un requerimiento para la salud integral.**
+                </p>
+            </div>
+
+            <!-- Teoría Triangular del Amor -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-10">
+                <div class="flex flex-col md:flex-row gap-8 items-center">
+                    <div class="md:w-1/3 text-center">
+                        <div class="relative w-48 h-48 mx-auto">
+                            <!-- Triangle representation -->
+                            <div class="absolute inset-0 border-b-[100px] border-b-brand-100 border-l-[80px] border-l-transparent border-r-[80px] border-r-transparent transform -translate-y-4"></div>
+                            <span class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-6 font-bold text-brand-700">Intimidad</span>
+                            <span class="absolute bottom-4 -left-8 font-bold text-rose-600">Pasión</span>
+                            <span class="absolute bottom-4 -right-8 font-bold text-emerald-600">Compromiso</span>
+                            <i class="fa-solid fa-heart text-4xl text-brand-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                        </div>
+                    </div>
+                    <div class="md:w-2/3">
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">2. La Teoría Triangular del Amor</h3>
+                        <p class="text-sm text-brand-700 font-medium mb-4">Autor: <a href="https://es.wikipedia.org/wiki/Robert_Sternberg" target="_blank" class="hover:underline text-brand-600">Robert Sternberg</a> (1986)</p>
+                        <p class="text-slate-600 mb-4 leading-relaxed">
+                            Sternberg postula que el amor completo ("Amor Consumado") está compuesto por el equilibrio de tres componentes vitales. Cuando un matrimonio se desequilibra, genera diferentes tipos de relaciones (ej. "Amor de compañeros" si falta pasión, o "Amor vacío" si solo hay compromiso):
+                        </p>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-brand-500 mt-1 mr-3"></i> <div><strong>Intimidad (Conexión Emocional):</strong> El sentimiento de cercanía, amistad, confianza mutua y vulnerabilidad compartida. Suele erosionarse por la falta de tiempo de calidad.</div></li>
+                            <li class="flex items-start"><i class="fa-solid fa-fire text-rose-500 mt-1 mr-3"></i> <div><strong>Pasión (Atracción):</strong> El impulso que lleva al romance y la conexión física.</div></li>
+                            <li class="flex items-start"><i class="fa-solid fa-ring text-emerald-500 mt-1 mr-3"></i> <div><strong>Compromiso (Decisión):</strong> La voluntad consciente de mantener la relación a largo plazo, superando adversidades y construyendo un proyecto común.</div></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disonancia Cognitiva -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-10 border-l-4 border-l-amber-500">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">3. Disonancia Cognitiva y la "Falsa Armonía"</h3>
+                <p class="text-sm text-amber-700 font-medium mb-4">Autores: <a href="https://es.wikipedia.org/wiki/Leon_Festinger" target="_blank" class="hover:underline text-amber-600">Leon Festinger</a> (1957) | <a href="https://es.wikipedia.org/wiki/John_Gottman" target="_blank" class="hover:underline text-amber-600">Dr. John Gottman</a> (Reparación Emocional)</p>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    La disonancia cognitiva explica la tensión psicológica que experimentamos cuando nuestra realidad no coincide con nuestras creencias o con la imagen que deseamos proyectar. En sociedades que valoran mucho el "qué dirán" o el estatus familiar, las parejas que viven en conflicto pueden desarrollar una <strong>"Falsa Armonía"</strong> frente al exterior.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Según el Dr. John Gottman, el problema de evadir el conflicto para mantener las apariencias (lo que él llama el jinete del "Muro de Piedra" o evasión) es que impide la <em>reparación emocional</em>. Las personas se auto-convencen de que "así es el matrimonio" para evitar el dolor de enfrentar la desconexión, bloqueando cualquier posibilidad de sanación real.
+                </p>
+            </div>
+
+            <!-- 4 Pilares del IAC -->
+            <div>
+                <h3 class="text-3xl font-serif font-bold text-center text-slate-800 mb-2">Los 4 Pilares de Medición del IAC</h3>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">
+                    El modelo de los <strong>4 Pilares del IAC</strong> es una matriz metodológica desarrollada específicamente para esta herramienta. Integra la teoría de Sternberg, los hallazgos de reparación de Gottman, y las realidades socioeconómicas contemporáneas para ofrecer un diagnóstico aplicable a la vida moderna.
+                </p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h4 class="font-bold text-lg mb-2 text-brand-900"><i class="fa-solid fa-landmark text-brand-500 mr-2"></i> 1. Sinergia Operativa (Logística)</h4>
+                        <p class="text-sm text-slate-600">Mide la eficiencia del matrimonio como "equipo" para administrar finanzas, hogar y responsabilidades cotidianas. Un pilar alto reduce el estrés diario.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h4 class="font-bold text-lg mb-2 text-rose-900"><i class="fa-solid fa-heart-pulse text-rose-500 mr-2"></i> 2. Conexión e Intimidad</h4>
+                        <p class="text-sm text-slate-600">Evalúa la amistad profunda, la validación emocional y la intimidad (el cruce entre Intimidad y Pasión de Sternberg). Es el núcleo del "Efecto Amortiguador".</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h4 class="font-bold text-lg mb-2 text-amber-900"><i class="fa-solid fa-comments text-amber-500 mr-2"></i> 3. Gestión de Conflictos</h4>
+                        <p class="text-sm text-slate-600">Analiza la capacidad de reparar la relación tras una discusión. Las parejas exitosas no son las que no pelean, sino las que reparan el daño rápido y sin rencor (Gottman).</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h4 class="font-bold text-lg mb-2 text-emerald-900"><i class="fa-solid fa-scale-balanced text-emerald-500 mr-2"></i> 4. Identidad y Valores</h4>
+                        <p class="text-sm text-slate-600">Mide la congruencia en la visión de vida, ética y metas a largo plazo. Representa el "Compromiso", actuando como ancla en tiempos de crisis.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ================= VISTA 3: RADIOGRAFÍA SOCIAL ================= -->
+    <section id="view-tables" class="view-section py-16 px-4 bg-slate-100">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold text-slate-800">Radiografía Social Comparativa</h2>
+                <p class="mt-4 text-slate-600 text-lg max-w-3xl mx-auto">Referencia estadística y cultural del comportamiento de la armonía a través del espectro económico y geográfico. <br><span class="text-sm text-slate-400">*(Datos proyectados para uso de referencia y contexto, cada pareja es única).*</span></p>
+            </div>
+
+            <!-- Tabla 1: Todo el Espectro en México -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-brand-900 text-white p-5 border-b border-brand-800">
+                    <h3 class="font-bold text-xl"><i class="fa-solid fa-map-location-dot mr-2"></i> Tendencias de Armonía: Espectro Social Completo</h3>
+                    <p class="text-brand-200 text-sm mt-1">Cómo los recursos y las presiones contextuales modifican los promedios de los 4 Pilares.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
+                            <tr>
+                                <th class="p-4 font-bold">Contexto / Entorno</th>
+                                <th class="p-4 font-semibold text-center border-l">1. Operativa</th>
+                                <th class="p-4 font-semibold text-center">2. Conexión</th>
+                                <th class="p-4 font-semibold text-center">3. Conflictos</th>
+                                <th class="p-4 font-semibold text-center">4. Valores</th>
+                                <th class="p-4 font-bold text-center text-brand-800 bg-brand-50 border-l">PROMEDIO IAC</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-4"><strong class="text-slate-800">Alta Disponibilidad de Recursos</strong><br><span class="text-xs text-slate-500">Gestión delegada, menor roce cotidiano.</span></td>
+                                <td class="p-4 text-center border-l text-emerald-600 font-semibold">9.0</td>
+                                <td class="p-4 text-center text-amber-600 font-semibold">6.5</td>
+                                <td class="p-4 text-center text-amber-600 font-semibold">6.5</td>
+                                <td class="p-4 text-center text-blue-600 font-semibold">8.0</td>
+                                <td class="p-4 text-center font-bold text-xl text-slate-800 bg-brand-50 border-l">7.5</td>
+                            </tr>
+                            <tr class="bg-blue-50/50 hover:bg-blue-50 transition">
+                                <td class="p-4"><strong class="text-brand-800 text-lg">Profesional / Alta Exigencia</strong><br><span class="text-xs text-brand-600">Alta presión por estatus, hiper-activismo.</span></td>
+                                <td class="p-4 text-center border-l text-emerald-600 font-bold">8.5</td>
+                                <td class="p-4 text-center text-amber-600 font-bold">6.0</td>
+                                <td class="p-4 text-center text-rose-600 font-bold">5.5</td>
+                                <td class="p-4 text-center text-blue-600 font-bold">8.0</td>
+                                <td class="p-4 text-center font-bold text-xl text-brand-900 bg-brand-100 border-l">7.0</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-4"><strong class="text-slate-800">Tensión Aspiracional</strong><br><span class="text-xs text-slate-500">Estrés financiero recurrente, deudas.</span></td>
+                                <td class="p-4 text-center border-l text-rose-600 font-semibold">5.5</td>
+                                <td class="p-4 text-center text-rose-600 font-semibold">5.0</td>
+                                <td class="p-4 text-center text-rose-600 font-semibold">5.0</td>
+                                <td class="p-4 text-center text-amber-600 font-semibold">6.5</td>
+                                <td class="p-4 text-center font-bold text-xl text-slate-800 bg-brand-50 border-l">5.5</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-4"><strong class="text-slate-800">Estabilidad Básica (Equipo)</strong><br><span class="text-xs text-slate-500">La pareja funciona como unidad de apoyo mutuo.</span></td>
+                                <td class="p-4 text-center border-l text-amber-600 font-semibold">6.0</td>
+                                <td class="p-4 text-center text-rose-600 font-semibold">5.5</td>
+                                <td class="p-4 text-center text-amber-600 font-semibold">6.0</td>
+                                <td class="p-4 text-center text-amber-600 font-semibold">6.5</td>
+                                <td class="p-4 text-center font-bold text-xl text-slate-800 bg-brand-50 border-l">6.0</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-4"><strong class="text-slate-800">Alta Resiliencia Comunitaria</strong><br><span class="text-xs text-slate-500">Apoyo vital en red familiar extensa.</span></td>
+                                <td class="p-4 text-center border-l text-amber-600 font-semibold">6.5</td>
+                                <td class="p-4 text-center text-rose-600 font-semibold">5.5</td>
+                                <td class="p-4 text-center text-amber-600 font-semibold">5.8</td>
+                                <td class="p-4 text-center text-blue-600 font-semibold">7.0</td>
+                                <td class="p-4 text-center font-bold text-xl text-slate-800 bg-brand-50 border-l">6.2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tabla 2: Matriz Internacional Completa -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-slate-800 text-white p-5 border-b border-slate-700">
+                    <h3 class="font-bold text-xl"><i class="fa-solid fa-globe mr-2"></i> Matriz Internacional de Armonía Conyugal (11 Países)</h3>
+                    <p class="text-slate-300 text-sm mt-1">Comparativa estimada de promedios de satisfaction/armonía a través de diferentes realidades socioculturales.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
+                            <tr>
+                                <th class="p-4 font-bold">País</th>
+                                <th class="p-4 font-semibold text-center border-l bg-slate-100">Alto Recurso</th>
+                                <th class="p-4 font-semibold text-center bg-blue-50 text-blue-800">Media Profesional</th>
+                                <th class="p-4 font-semibold text-center bg-slate-100">Media Típica</th>
+                                <th class="p-4 font-semibold text-center bg-slate-100">Base / Popular</th>
+                                <th class="p-4 font-bold border-l">Factor Determinante Cultural</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <!-- Norteamerica -->
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-bold text-emerald-700"><i class="fa-solid fa-flag mr-2"></i>México</td>
+                                <td class="p-4 text-center border-l bg-slate-50">7.5</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">7.0</td>
+                                <td class="p-4 text-center bg-slate-50">5.5</td>
+                                <td class="p-4 text-center bg-slate-50">6.1</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Estructura familiar fuerte, evasión de conflicto abierto.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>Estados Unidos</td>
+                                <td class="p-4 text-center border-l bg-slate-50">6.8</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">6.2</td>
+                                <td class="p-4 text-center bg-slate-50">5.8</td>
+                                <td class="p-4 text-center bg-slate-50">5.4</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Individualismo, estrés laboral. Mayor tasa de rupturas depura el promedio.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>Canadá</td>
+                                <td class="p-4 text-center border-l bg-slate-50">7.1</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">6.9</td>
+                                <td class="p-4 text-center bg-slate-50">6.5</td>
+                                <td class="p-4 text-center bg-slate-50">6.0</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Mayor equidad de roles y redes de seguridad social reducen fricción.</td>
+                            </tr>
+                            <!-- Europa -->
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>España</td>
+                                <td class="p-4 text-center border-l bg-slate-50">6.0</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">6.5</td>
+                                <td class="p-4 text-center bg-slate-50">6.2</td>
+                                <td class="p-4 text-center bg-slate-50">5.6</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Autonomía individual priorizada; baja tolerancia a la disonancia cognitiva.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>Italia</td>
+                                <td class="p-4 text-center border-l bg-slate-50">7.8</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">7.2</td>
+                                <td class="p-4 text-center bg-slate-50">6.8</td>
+                                <td class="p-4 text-center bg-slate-50">7.2</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">El núcleo de la familia extendida actúa como estabilizador social.</td>
+                            </tr>
+                            <!-- LATAM -->
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>Colombia</td>
+                                <td class="p-4 text-center border-l bg-slate-50">7.2</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">6.8</td>
+                                <td class="p-4 text-center bg-slate-50">5.8</td>
+                                <td class="p-4 text-center bg-slate-50">6.4</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Alta resiliencia frente a adversidades externas.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>Argentina</td>
+                                <td class="p-4 text-center border-l bg-slate-50">5.5</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">5.5</td>
+                                <td class="p-4 text-center bg-slate-50">5.0</td>
+                                <td class="p-4 text-center bg-slate-50">5.5</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Cultura del debate y análisis; los conflictos se verbalizan frontalmente.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>Chile</td>
+                                <td class="p-4 text-center border-l bg-slate-50">6.8</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">6.7</td>
+                                <td class="p-4 text-center bg-slate-50">5.8</td>
+                                <td class="p-4 text-center bg-slate-50">5.3</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Pragmatismo enfocado en la estabilidad del proyecto familiar.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>Brasil</td>
+                                <td class="p-4 text-center border-l bg-slate-50">7.0</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">6.9</td>
+                                <td class="p-4 text-center bg-slate-50">6.5</td>
+                                <td class="p-4 text-center bg-slate-50">6.9</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Menor rigidez de roles y comunicación emocional muy abierta y expresiva.</td>
+                            </tr>
+                            <!-- Otros contrastes -->
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>Filipinas</td>
+                                <td class="p-4 text-center border-l bg-slate-50">8.2</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">7.5</td>
+                                <td class="p-4 text-center bg-slate-50">7.8</td>
+                                <td class="p-4 text-center bg-slate-50">8.1</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Divorcio ilegal; se desarrollan profundos mecanismos de adaptación y resiliencia.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 font-medium"><i class="fa-solid fa-flag mr-2"></i>Japón</td>
+                                <td class="p-4 text-center border-l bg-slate-50">6.5</td>
+                                <td class="p-4 text-center font-bold text-blue-800 bg-blue-50/50">6.0</td>
+                                <td class="p-4 text-center bg-slate-50">5.8</td>
+                                <td class="p-4 text-center bg-slate-50">5.5</td>
+                                <td class="p-4 border-l text-xs text-slate-600 whitespace-normal min-w-[250px] leading-relaxed">Alta armonía operativa, pero intimidad en formatos muy reservados y estructurados.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Nota Metodológica -->
+            <div class="bg-slate-200/70 p-6 rounded-2xl border border-slate-300 text-sm text-slate-700 shadow-inner">
+                <h4 class="font-bold mb-2 text-slate-800"><i class="fa-solid fa-microscope mr-2 text-brand-600"></i> Nota Metodológica sobre los Datos Sociológicos</h4>
+                <p class="leading-relaxed">
+                    Las calificaciones y promedios expuestos en las matrices anteriores no son datos extraídos de un único estudio estadístico cerrado, sino <strong>proyecciones analíticas sintéticas</strong>. Se construyeron cruzando: <strong>1)</strong> Datos de estratificación socioeconómica; <strong>2)</strong> Estadísticas internacionales de tasas de divorcio (OCDE); <strong>3)</strong> Reportes de Bienestar Subjetivo y felicidad; y <strong>4)</strong> El análisis cualitativo clínico del "costo social" de la ruptura. Esta radiografía sirve como un mapa de tendencias psicosociales para contextualizar el resultado de cada pareja.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ================= VISTA 4: APP / TEST ================= -->
+    <section id="view-test" class="view-section py-16 px-4">
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden min-h-[500px]" id="test-container-box">
+            
+            <div id="progress-bar-container" class="h-2 bg-slate-100 hidden no-print">
+                <div id="progress-bar" class="h-full bg-brand-500 transition-all duration-300 w-0"></div>
+            </div>
+
+            <div class="p-8 md:p-12">
+                
+                <!-- Pantalla 1: Instrucciones -->
+                <div id="step-intro" class="text-center space-y-6 smooth-show">
+                    <div class="w-20 h-20 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center text-3xl mx-auto">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold">Diagnóstico IAC en Pareja</h2>
+                    <p class="text-slate-600 leading-relaxed max-w-2xl mx-auto">
+                        Este test de 15 preguntas revelará el nivel de su relación en los 4 pilares: Operativa, Intimidad, Conflictos y Valores. Identificará si su relación está funcionando como un verdadero "Efecto Amortiguador".
+                    </p>
+                    <div class="bg-amber-50 border border-amber-100 text-amber-800 p-4 rounded-lg text-sm text-left flex gap-3 max-w-2xl mx-auto">
+                        <i class="fa-solid fa-triangle-exclamation mt-1"></i>
+                        <div>
+                            <strong>Instrucciones Importantes:</strong>
+                            <ul class="list-disc ml-5 mt-2 space-y-1">
+                                <li><strong>Pareja 1</strong> contestará primero en privado.</li>
+                                <li>Al terminar, la pantalla se bloqueará para pasar el dispositivo a la <strong>Pareja 2</strong>.</li>
+                                <li>Contesten con total honestidad (Escala 1: Totalmente en desacuerdo, 10: Totalmente de acuerdo).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 p-4 rounded-lg mt-6 text-left max-w-2xl mx-auto border border-slate-200 text-sm text-slate-600">
+                        <p class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-microscope text-brand-600 mr-2"></i> Investigación Académica</p>
+                        <p class="mb-3">Los resultados de este test podrán ser utilizados para efectos de investigación de forma <strong>estrictamente anónima</strong>. Al continuar, aceptas contribuir a este estudio socio-demográfico.</p>
+                        <label class="flex items-start space-x-3 cursor-pointer">
+                            <input type="checkbox" id="opt-out-research" class="mt-1 h-4 w-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                            <span class="text-slate-700 font-medium">No deseo compartir mis resultados anónimos para investigación.</span>
+                        </label>
+                    </div>
+
+                    <button onclick="startTest(1)" class="w-full md:w-auto bg-brand-700 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-brand-900 transition mt-4">
+                        Comenzar Test - Pareja 1 <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Pantalla 2: Preguntas -->
+                <div id="step-questions" class="smooth-hide">
+                    <div class="flex justify-between items-center mb-6">
+                        <span id="partner-badge" class="bg-brand-100 text-brand-800 px-3 py-1 rounded-full text-sm font-bold border border-brand-200">
+                            Turno: Pareja 1
+                        </span>
+                        <span class="text-sm font-medium text-slate-400" id="question-counter">Evaluación en progreso</span>
+                    </div>
+
+                    <div id="questions-container" class="space-y-8">
+                        <!-- Las preguntas se inyectan por JS -->
+                    </div>
+
+                    <div class="mt-10 border-t pt-6 flex justify-between items-center">
+                        <span id="error-msg" class="text-red-500 text-sm font-medium hidden">Por favor, responde todas las preguntas.</span>
+                        <button onclick="submitPartner()" class="ml-auto bg-slate-800 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-slate-900 transition">
+                            Finalizar mi turno <i class="fa-solid fa-check ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pantalla 3: Intersticial -->
+                <div id="step-interstitial" class="text-center space-y-8 smooth-hide py-10">
+                    <div class="w-24 h-24 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto animate-pulse">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold">¡Excelente, Pareja 1!</h2>
+                    <p class="text-slate-600 text-lg">
+                        Tus respuestas han sido guardadas de forma segura y oculta. <br>
+                        Es momento de pasarle el dispositivo a tu pareja.
+                    </p>
+                    <button onclick="startTest(2)" class="bg-brand-700 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-brand-900 transition">
+                        Soy la Pareja 2, Comenzar <i class="fa-solid fa-play ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Pantalla 4: Resultados (Imprimible) -->
+                <div id="step-results" class="smooth-hide space-y-8">
+                    
+                    <!-- ====== HOJA 1: RESULTADOS GENERALES ====== -->
+                    <div class="print-only hidden text-center mb-8 border-b pb-4">
+                        <h1 class="text-3xl font-serif font-bold">Reporte Clínico: Índice de Armonía Conyugal</h1>
+                        <p class="text-slate-500">Documento confidencial generado para análisis de pareja.</p>
+                    </div>
+
+                    <div class="text-center no-print flex justify-between items-center">
+                        <div>
+                            <h2 class="text-3xl font-serif font-bold text-slate-800">Resultados del Análisis</h2>
+                            <p class="text-slate-500 mt-1">Diagnóstico basado en la percepción conjunta.</p>
+                        </div>
+                        <button onclick="window.print()" class="text-slate-600 hover:text-brand-700 font-medium text-sm flex items-center bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition shadow-sm">
+                            <i class="fa-solid fa-file-pdf mr-2 text-red-500"></i> Imprimir / Guardar PDF
+                        </button>
+                    </div>
+
+                    <!-- Alerta de Activación FormSubmit (Solo visible para Admin si falla) -->
+                    <div id="admin-activation-alert" class="hidden bg-amber-100 border border-amber-300 text-amber-800 p-5 rounded-xl shadow-sm mb-2 no-print">
+                        <h4 class="font-bold text-lg mb-1"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Acción requerida por el administrador</h4>
+                        <p class="text-sm">El envío automático de resultados está pausado por seguridad. Por favor, revisa la bandeja de entrada o la carpeta de SPAM de <strong>ares@polispay.org</strong> y haz clic en el botón <strong>"Activate Form"</strong> en el correo enviado por <em>FormSubmit</em> para habilitar el sistema de forma permanente.</p>
+                    </div>
+
+                    <!-- Score Principal -->
+                    <div class="bg-slate-800 rounded-2xl p-8 text-center text-white shadow-lg relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 opacity-10 text-9xl no-print"><i class="fa-solid fa-chart-pie"></i></div>
+                        <h3 class="text-lg font-medium text-slate-300">Índice de Armonía Conyugal (IAC)</h3>
+                        <div class="text-6xl font-bold font-serif my-4" id="res-score-total">--</div>
+                        <div class="inline-block px-4 py-1 rounded-full bg-white/20 text-white font-bold text-lg border border-white/30" id="res-classification">
+                            Calculando...
+                        </div>
+                    </div>
+
+                    <!-- Alerta de Brecha -->
+                    <div id="res-gap-alert" class="p-5 rounded-xl border flex gap-4 items-start bg-white shadow-sm">
+                        <!-- Inyectado por JS -->
+                    </div>
+
+                    <!-- Recomendación Profesional -->
+                    <div class="bg-brand-50 p-6 rounded-xl border border-brand-200 shadow-sm">
+                        <h3 class="font-bold text-xl text-brand-900 mb-4 flex items-center border-b border-brand-100 pb-2">
+                            <i class="fa-solid fa-user-doctor mr-2"></i> Diagnóstico General
+                        </h3>
+                        <div class="space-y-4 text-slate-700" id="res-expert-text">
+                            <!-- Inyectado por JS -->
+                        </div>
+                    </div>
+
+                    <!-- ====== HOJA 2: DESGLOSE Y PLANES DE ACCIÓN ====== -->
+                    <div class="print-break pt-8">
+                        
+                        <div class="print-only hidden text-center mb-6 border-b pb-4 mt-8">
+                            <h2 class="text-2xl font-serif font-bold">Desglose Individual y Plan de Acción</h2>
+                        </div>
+
+                        <!-- Desglose de Pilares Individual -->
+                        <div class="bg-white p-6 md:p-8 rounded-xl border border-slate-200 shadow-sm mb-8">
+                            <h3 class="font-bold text-xl text-slate-800 mb-2 flex items-center">
+                                <i class="fa-solid fa-chart-bar text-brand-600 mr-2"></i> Reporte Detallado por Pilar
+                            </h3>
+                            <div class="flex items-center text-sm text-slate-500 mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                <i class="fa-solid fa-circle-info mr-2 text-brand-500"></i> 
+                                <span>La <strong>Línea Negra Oscura (|)</strong> indica el promedio de las parejas en México para ese pilar, sirviendo como punto de referencia social.</span>
+                            </div>
+
+                            <div class="space-y-8" id="res-pillars-individual-container">
+                                <!-- Inyectado por JS -->
+                            </div>
+                        </div>
+
+                        <!-- Plan de Acción de 5 Pasos -->
+                        <div class="bg-white p-6 md:p-8 rounded-xl border border-slate-200 shadow-sm mb-8" id="res-action-plan-container">
+                            <!-- Inyectado por JS -->
+                        </div>
+                    </div>
+
+                    <!-- Enviar Resultados al Usuario -->
+                    <div class="bg-blue-50 p-6 md:p-8 rounded-xl border border-blue-200 shadow-sm mb-8 no-print">
+                        <h3 class="font-bold text-xl text-blue-900 mb-2 flex items-center">
+                            <i class="fa-solid fa-envelope-open-text mr-2"></i> Recibir mis resultados
+                        </h3>
+                        <p class="text-sm text-slate-700 mb-4">Ingresa tu correo electrónico para enviarte una copia detallada de este reporte clínico.</p>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <input type="email" id="user-email-input" placeholder="tu@correo.com" class="flex-1 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <button onclick="sendUserEmail()" id="btn-send-email" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition shadow-md whitespace-nowrap flex justify-center items-center">
+                                Enviar a mi correo <i class="fa-solid fa-paper-plane ml-2"></i>
+                            </button>
+                        </div>
+                        <p id="email-feedback" class="text-sm font-medium mt-3 hidden"></p>
+                    </div>
+
+                    <div class="text-center pt-2 space-y-4 no-print border-t mt-8">
+                        <button onclick="resetTest()" class="text-slate-500 hover:text-slate-800 font-medium underline block mx-auto pt-6">
+                            Volver a realizar el test desde cero
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (No Print) -->
+    <footer class="bg-slate-900 text-slate-400 py-12 px-4 border-t border-slate-800 no-print">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 text-center md:text-left">
+            <div class="md:col-span-1">
+                <div class="flex items-center justify-center md:justify-start space-x-3 text-white mb-4">
+                    <i class="fa-solid fa-rings-wedding text-2xl"></i>
+                    <div class="flex flex-col text-left">
+                        <span class="font-serif font-bold text-xl leading-tight">IAC</span>
+                        <span class="text-xs text-slate-400 font-medium">Índice de Armonía Conyugal</span>
+                    </div>
+                </div>
+                <p class="text-sm leading-relaxed">
+                    Esta herramienta es un ejercicio de autodiagnóstico. El modelo de los 4 pilares es un modelo de orientación para fortalecer al matrimonio.
+                </p>
+            </div>
+            <div class="md:col-span-1">
+                <h4 class="text-white font-bold mb-4">Referencias Científicas</h4>
+                <ul class="text-sm space-y-3 text-left inline-block">
+                    <li><a href="https://pubmed.ncbi.nlm.nih.gov/3901065/" target="_blank" class="hover:text-brand-400 transition flex items-start"><i class="fa-solid fa-arrow-up-right-from-square text-brand-500 mr-2 mt-1"></i> <span><strong>Cohen & Wills (1985).</strong> Stress, social support, and the buffering hypothesis.</span></a></li>
+                    <li><a href="https://es.wikipedia.org/wiki/Teor%C3%ADa_triangular_del_amor" target="_blank" class="hover:text-brand-400 transition flex items-start"><i class="fa-solid fa-arrow-up-right-from-square text-brand-500 mr-2 mt-1"></i> <span><strong>Sternberg, R. J. (1986).</strong> Teoría Triangular del Amor.</span></a></li>
+                    <li><a href="https://es.wikipedia.org/wiki/Disonancia_cognitiva" target="_blank" class="hover:text-brand-400 transition flex items-start"><i class="fa-solid fa-arrow-up-right-from-square text-brand-500 mr-2 mt-1"></i> <span><strong>Festinger, L. (1957).</strong> Disonancia Cognitiva.</span></a></li>
+                </ul>
+            </div>
+            <div class="md:col-span-1">
+                <h4 class="text-white font-bold mb-4">Lecturas Recomendadas</h4>
+                <ul class="text-sm space-y-3 text-left inline-block">
+                    <li><a href="https://www.gottman.com/product/the-seven-principles-for-making-marriage-work/" target="_blank" class="hover:text-amber-400 transition flex items-start"><i class="fa-solid fa-book-open text-amber-500 mr-2 mt-1"></i> <span><strong>7 Reglas de Oro para Vivir en Pareja</strong><br>Dr. John Gottman</span></a></li>
+                    <li><a href="https://www.loveandrespect.com/" target="_blank" class="hover:text-amber-400 transition flex items-start"><i class="fa-solid fa-book-open text-amber-500 mr-2 mt-1"></i> <span><strong>Amor y Respeto (Love & Respect)</strong><br>Emerson Eggerichs</span></a></li>
+                    <li><a href="https://5lovelanguages.com/learn" target="_blank" class="hover:text-amber-400 transition flex items-start"><i class="fa-solid fa-book-open text-amber-500 mr-2 mt-1"></i> <span><strong>Los 5 Lenguajes del Amor</strong><br>Gary Chapman</span></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-slate-800 text-center text-xs text-slate-500">
+            <p>&copy; 2026 Derechos Reservados CIEC | <a href="https://www.ciemx.com" target="_blank" class="hover:text-brand-400 transition">www.ciemx.com</a></p>
+        </div>
+    </footer>
+
+    <!-- Logic Script -->
+    <script>
+        // --- Funciones de manipulación segura del DOM (Null-Checks) ---
+        const safeSetText = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
+        const safeSetHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+        const safeSetClass = (id, cls) => { const el = document.getElementById(id); if (el) el.className = cls; };
+        const safeAddClass = (id, cls) => { const el = document.getElementById(id); if (el) el.classList.add(cls); };
+        const safeRemoveClass = (id, cls) => { const el = document.getElementById(id); if (el) el.classList.remove(cls); };
+        const safeSetStyle = (id, prop, val) => { const el = document.getElementById(id); if (el) el.style[prop] = val; };
+
+        // --- Navigation Logic ---
+        function navigate(viewId) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-50', 'text-brand-700');
+                if(!btn.classList.contains('bg-brand-700')) {
+                    btn.classList.add('text-slate-500');
+                }
+            });
+            
+            const activeBtn = document.getElementById('nav-' + viewId);
+            if(activeBtn && !activeBtn.classList.contains('bg-brand-700')) {
+                activeBtn.classList.remove('text-slate-500');
+                activeBtn.classList.add('bg-brand-50', 'text-brand-700');
+            }
+
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            const viewEl = document.getElementById(viewId);
+            if(viewEl) viewEl.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // --- 1. Definición de Datos ---
+        const questions = [
+            { id: 'q1', pilar: 1, text: "Sentimos que somos un equipo eficiente manejando la casa, los problemas logísticos y el presupuesto." },
+            { id: 'q2', pilar: 1, text: "Estamos de acuerdo en cómo administramos e invertimos nuestros recursos." },
+            { id: 'q3', pilar: 1, text: "El reparto de responsabilidades en el hogar nos parece justo y equilibrado a ambos." },
+            { id: 'q4', pilar: 1, text: "Logramos equilibrar nuestras ambiciones y tiempos de trabajo con la vida familiar." },
+            { id: 'q5', pilar: 2, text: "Siento que mi pareja es la primera persona a la que quiero contarle una buena o mala noticia." },
+            { id: 'q6', pilar: 2, text: "Mantenemos espacios de pareja (citas, charlas íntimas) dedicados solo a nosotros, sin hablar de obligaciones." },
+            { id: 'q7', pilar: 2, text: "Me siento profundamente escuchado/a y validado/a emocionalmente cuando expreso una vulnerabilidad o miedo." },
+            { id: 'q8', pilar: 2, text: "Existe una vida íntima, de contacto físico y afectiva que me satisface plenamente." },
+            { id: 'q9', pilar: 3, text: "Podemos discutir temas difíciles sin caer en ataques personales, insultos o evasión (ley del hielo)." },
+            { id: 'q10', pilar: 3, text: "Después de una pelea o malentendido, logramos reparar la conexión rápidamente y sin guardar rencor." },
+            { id: 'q11', pilar: 3, text: "Siento que puedo ser yo mismo/a; no tengo que 'caminar sobre cáscaras de huevo' para evitar que el otro explote." },
+            { id: 'q12', pilar: 3, text: "En los desacuerdos, priorizamos el bienestar de la relación en lugar de llevar la cuenta de 'quién tiene la razón'." },
+            { id: 'q13', pilar: 4, text: "Compartimos la misma visión fundamental sobre la vida, ética, metas y desarrollo personal/familiar." },
+            { id: 'q14', pilar: 4, text: "Siento un profundo respeto y admiración por el ser humano en el que se ha convertido mi pareja." },
+            { id: 'q15', pilar: 4, text: "Siento total seguridad de que el compromiso de mi pareja hacia nuestra relación es sólido ante cualquier crisis a largo plazo." }
+        ];
+
+        const pilarData = {
+            1: { name: "Sinergia Operativa (Logística)", icon: "fa-landmark", color: "text-blue-600" },
+            2: { name: "Conexión e Intimidad", icon: "fa-heart-pulse", color: "text-rose-600" },
+            3: { name: "Gestión de Conflictos", icon: "fa-comments", color: "text-amber-600" },
+            4: { name: "Identidad y Valores", icon: "fa-scale-balanced", color: "text-emerald-600" }
+        };
+
+        // Promedios estimados en México para dibujar la línea de referencia
+        const mxAverages = { 1: 8.5, 2: 6.0, 3: 5.5, 4: 8.0 };
+
+        // --- 2. Estado de la Aplicación ---
+        let state = { currentPartner: 1, answersP1: {}, answersP2: {} };
+
+        // --- 3. Funciones de UI Test ---
+        function switchTestView(viewId) {
+            ['step-intro', 'step-questions', 'step-interstitial', 'step-results'].forEach(id => {
+                safeRemoveClass(id, 'smooth-show');
+                safeAddClass(id, 'smooth-hide');
+            });
+            setTimeout(() => {
+                safeRemoveClass(viewId, 'smooth-hide');
+                safeAddClass(viewId, 'smooth-show');
+            }, 50);
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            if(!container) return;
+            container.innerHTML = ''; 
+
+            let htmlChunk = '';
+            questions.forEach((q, index) => {
+                htmlChunk += `
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm question-block" id="block-${q.id}">
+                    <p class="text-lg font-medium text-slate-800 mb-4"><span class="text-brand-500 font-bold mr-2">${index + 1}.</span> ${q.text}</p>
+                    <div class="flex justify-between text-xs text-slate-500 mb-2 px-1 font-medium">
+                        <span>1. Totalmente en desacuerdo</span>
+                        <span>10. Totalmente de acuerdo</span>
+                    </div>
+                    <div class="flex justify-between gap-1 sm:gap-2">
+                `;
+                for (let i = 1; i <= 10; i++) {
+                    htmlChunk += `
+                        <div class="relative w-full">
+                            <input type="radio" name="${q.id}" id="${q.id}_${i}" value="${i}" class="score-radio absolute opacity-0 w-0 h-0" onchange="updateProgress()">
+                            <label for="${q.id}_${i}" class="score-label w-full aspect-square flex items-center justify-center rounded-lg border border-slate-300 text-slate-700 cursor-pointer font-bold text-sm sm:text-base bg-white hover:border-brand-500">
+                                ${i}
+                            </label>
+                        </div>
+                    `;
+                }
+                htmlChunk += `</div></div>`;
+            });
+            container.innerHTML = htmlChunk;
+        }
+
+        function updateProgress() {
+            const total = questions.length;
+            let answered = 0;
+            questions.forEach(q => {
+                if(document.querySelector(`input[name="${q.id}"]:checked`)) answered++;
+            });
+            const percent = (answered / total) * 100;
+            safeSetStyle('progress-bar', 'width', `${percent}%`);
+            safeAddClass('error-msg', 'hidden');
+        }
+
+        function startTest(partnerNum) {
+            state.currentPartner = partnerNum;
+            safeRemoveClass('progress-bar-container', 'hidden');
+            safeSetStyle('progress-bar', 'width', '0%');
+            
+            const badge = document.getElementById('partner-badge');
+            if(badge) {
+                if(partnerNum === 1) {
+                    badge.className = "bg-brand-100 text-brand-800 px-4 py-1 rounded-full text-sm font-bold border border-brand-200";
+                    badge.innerHTML = '<i class="fa-solid fa-user mr-2"></i> Turno: Pareja 1';
+                } else {
+                    badge.className = "bg-teal-100 text-teal-800 px-4 py-1 rounded-full text-sm font-bold border border-teal-200";
+                    badge.innerHTML = '<i class="fa-solid fa-user-group mr-2"></i> Turno: Pareja 2';
+                }
+            }
+
+            renderQuestions(); 
+            const testView = document.getElementById('view-test');
+            if(testView) window.scrollTo(0, testView.offsetTop);
+            switchTestView('step-questions');
+        }
+
+        function submitPartner() {
+            let allAnswered = true;
+            let currentAnswers = {};
+
+            questions.forEach(q => {
+                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                if (selected) {
+                    currentAnswers[q.id] = parseInt(selected.value);
+                } else {
+                    allAnswered = false;
+                    const block = document.getElementById(`block-${q.id}`);
+                    if(block) {
+                        block.classList.add('border-red-400', 'bg-red-50');
+                        setTimeout(() => block.classList.remove('border-red-400', 'bg-red-50'), 2000);
+                    }
+                }
+            });
+
+            if (!allAnswered) {
+                safeRemoveClass('error-msg', 'hidden');
+                return;
+            }
+
+            if (state.currentPartner === 1) {
+                state.answersP1 = currentAnswers;
+                const testView = document.getElementById('view-test');
+                if(testView) window.scrollTo(0, testView.offsetTop);
+                switchTestView('step-interstitial');
+            } else {
+                state.answersP2 = currentAnswers;
+                safeAddClass('progress-bar-container', 'hidden');
+                calculateResults();
+            }
+        }
+
+        // --- 5. Cálculo y Resultados Profundos ---
+        function calculateResults() {
+            let totalP1 = 0, totalP2 = 0;
+            let pillarScores = { 1: {p1:0, p2:0}, 2: {p1:0, p2:0}, 3: {p1:0, p2:0}, 4: {p1:0, p2:0} };
+            let pillarCounts = { 1:0, 2:0, 3:0, 4:0 };
+
+            questions.forEach(q => {
+                const val1 = state.answersP1[q.id] || 0;
+                const val2 = state.answersP2[q.id] || 0;
+                totalP1 += val1; totalP2 += val2;
+                pillarScores[q.pilar].p1 += val1;
+                pillarScores[q.pilar].p2 += val2;
+                pillarCounts[q.pilar] += 1;
+            });
+
+            const avgP1 = (totalP1 / 15).toFixed(1);
+            const avgP2 = (totalP2 / 15).toFixed(1);
+            const combinedAvg = (((totalP1 + totalP2) / 2) / 15).toFixed(1);
+            const gap = Math.abs(avgP1 - avgP2).toFixed(1);
+
+            safeSetText('res-score-total', combinedAvg);
+            safeSetText('res-score-p1', avgP1);
+            safeSetText('res-score-p2', avgP2);
+
+            // Análisis General (Hoja 1)
+            let classText = "", classColor = "", baseDiag = "";
+
+            if (combinedAvg >= 9.0) {
+                classText = "Sinergia Real (Excelente)"; classColor = "bg-emerald-600";
+                baseDiag = "<p>Su relación se encuentra en el decil superior de armonía. Muestran un nivel excepcional de compañerismo, validación y logística funcional. El <em>Efecto Amortiguador</em> frente al estrés externo está en su máxima capacidad de protección neurobiológica.</p>";
+            } else if (combinedAvg >= 7.5) {
+                classText = "Armonía Sólida (Muy Bien)"; classColor = "bg-teal-600";
+                baseDiag = "<p>Su relación es muy fuerte y funciona como un verdadero equipo. Poseen bases sólidas en valores y en la administración del hogar. El reto preventivo es no permitir que la rutina convierta el matrimonio en un 'proyecto funcional' en lugar de un vínculo afectivo vital.</p>";
+            } else if (combinedAvg >= 6.5) {
+                classText = "Estabilidad Funcional (Promedio)"; classColor = "bg-blue-600";
+                baseDiag = "<p>Este es el nivel clásico de muchas parejas contemporáneas. Suelen funcionar excelente como socios, pero la conexión íntima o la paciencia mutua están experimentando desgaste. Existe un riesgo latente de caer en 'disonancia cognitiva': justificar la lejanía emocional por lo bien que administran el día a día.</p>";
+            } else if (combinedAvg >= 5.0) {
+                classText = "Zona de Tensión (Alerta)"; classColor = "bg-amber-600";
+                baseDiag = "<p>La relación está operando bajo presión evidente. El hogar se está volviendo una fuente de estrés en lugar de un refugio, impidiendo que el Efecto Amortiguador funcione. Es fundamental hacer una pausa y redirigir esfuerzos hacia el cuidado mutuo y la reparación emocional.</p>";
+            } else {
+                classText = "Crisis de Estructura (Crítico)"; classColor = "bg-rose-600";
+                baseDiag = "<p>Resultados críticos que indican desconexión severa o resentimiento acumulado. Es probable que la relación se mantenga por inercia logística o temor al cambio. Se recomienda enfáticamente buscar apoyo clínico profesional para sanar heridas, romper muros de comunicación o tomar decisiones saludables.</p>";
+            }
+
+            safeSetText('res-classification', classText);
+            safeSetClass('res-classification', `inline-block px-6 py-2 rounded-full text-white font-bold text-lg border border-white/30 shadow-md ${classColor}`);
+            safeSetHtml('res-expert-text', baseDiag);
+
+            // Brecha de percepción
+            const gapAlertDiv = document.getElementById('res-gap-alert');
+            if (gapAlertDiv) {
+                if (gap <= 0.5) {
+                    gapAlertDiv.className = "p-5 rounded-xl border bg-emerald-50 border-emerald-200 flex gap-4 items-start w-full";
+                    gapAlertDiv.innerHTML = `<div class="text-emerald-500 text-3xl"><i class="fa-solid fa-handshake-angle"></i></div>
+                        <div><h4 class="font-bold text-emerald-900 text-lg mb-1">Visión Compartida</h4><p class="text-sm text-emerald-800">Tienen una brecha mínima (${gap} pts). Ambos perciben y experimentan la relación de manera muy similar, lo cual es el mejor cimiento para colaborar ante la adversidad.</p></div>`;
+                } else if (gap <= 1.5) {
+                    gapAlertDiv.className = "p-5 rounded-xl border bg-blue-50 border-blue-200 flex gap-4 items-start w-full";
+                    gapAlertDiv.innerHTML = `<div class="text-blue-500 text-3xl"><i class="fa-solid fa-glasses"></i></div>
+                        <div><h4 class="font-bold text-blue-900 text-lg mb-1">Diferencias de Rol</h4><p class="text-sm text-blue-800">Tienen una brecha de ${gap} pts. Es un margen normal de variabilidad; uno de ustedes está procesando más estrés en ciertas áreas. Revisen el desglose para ver en qué difieren sus opiniones.</p></div>`;
+                } else {
+                    gapAlertDiv.className = "p-5 rounded-xl border bg-rose-50 border-rose-200 flex gap-4 items-start w-full";
+                    gapAlertDiv.innerHTML = `<div class="text-rose-600 text-3xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div><h4 class="font-bold text-rose-900 text-lg mb-1">Alerta: Falsa Armonía Detectada</h4><p class="text-sm text-rose-800">Brecha crítica de <strong>${gap} puntos</strong>. Uno de ustedes califica la relación mucho más bajo que el otro. Esto indica desgaste en silencio mientras la contraparte asume estabilidad. Requiere apertura sin defensivas.</p></div>`;
+                }
+            }
+
+            // Desglose de Pilares Individual (P1 vs P2 con línea MX) - Hoja 2
+            const pillarsContainer = document.getElementById('res-pillars-individual-container');
+            let lowestPillarAvg = 11;
+            let lowestPillarId = 1;
+
+            if (pillarsContainer) {
+                let htmlPilars = '';
+                for(let i=1; i<=4; i++) {
+                    let p1Score = (pillarScores[i].p1 / pillarCounts[i]);
+                    let p2Score = (pillarScores[i].p2 / pillarCounts[i]);
+                    let p_avg = (p1Score + p2Score) / 2;
+                    
+                    if(p_avg < lowestPillarAvg) {
+                        lowestPillarAvg = p_avg;
+                        lowestPillarId = i;
+                    }
+
+                    let mxAverage = mxAverages[i];
+                    let mxPct = (mxAverage / 10) * 100;
+                    let data = pilarData[i];
+
+                    function getBarColor(score) {
+                        if(score >= 8) return 'bg-emerald-500';
+                        if(score >= 6.5) return 'bg-blue-500';
+                        if(score >= 5) return 'bg-amber-500';
+                        return 'bg-rose-500';
+                    }
+
+                    htmlPilars += `
+                    <div class="pt-4 border-t border-slate-100 first:border-0 first:pt-0">
+                        <h4 class="text-md font-bold mb-3 text-slate-800 uppercase tracking-wide"><i class="fa-solid ${data.icon} ${data.color} mr-2"></i> Pilar ${i}: ${data.name}</h4>
+                        
+                        <div class="space-y-3 pl-2 md:pl-6">
+                            <!-- Barra Pareja 1 -->
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-brand-700 mb-1">
+                                    <span>Pareja 1</span>
+                                    <span>${p1Score.toFixed(1)} / 10</span>
+                                </div>
+                                <div class="relative w-full bg-slate-200 rounded-full h-3">
+                                    <div class="${getBarColor(p1Score)} h-3 rounded-full transition-all duration-1000" style="width: ${(p1Score/10)*100}%"></div>
+                                    <div class="mx-marker" style="left: ${mxPct}%; transform: translateX(-50%);" title="Promedio México: ${mxAverage}"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Barra Pareja 2 -->
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-teal-700 mb-1">
+                                    <span>Pareja 2</span>
+                                    <span>${p2Score.toFixed(1)} / 10</span>
+                                </div>
+                                <div class="relative w-full bg-slate-200 rounded-full h-3">
+                                    <div class="${getBarColor(p2Score)} h-3 rounded-full transition-all duration-1000" style="width: ${(p2Score/10)*100}%"></div>
+                                    <div class="mx-marker" style="left: ${mxPct}%; transform: translateX(-50%);" title="Promedio México: ${mxAverage}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }
+                pillarsContainer.innerHTML = htmlPilars;
+            }
+
+            // Generar Plan de Acción de 5 puntos basado en el pilar más débil
+            let pName = pilarData[lowestPillarId].name;
+            let actionHtml = "";
+
+            if (lowestPillarAvg < 7.5) {
+                actionHtml = `
+                    <h3 class="font-bold text-xl text-rose-800 mb-3 flex items-center border-b border-rose-100 pb-2">
+                        <i class="fa-solid fa-list-check mr-2"></i> Plan de Acción Inmediato: ${pName}
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4">Hemos detectado que esta área es la más vulnerable en su relación actualmente. Para evitar el desgaste emocional, comiencen a implementar los siguientes 5 puntos esta misma semana:</p>
+                    <ul class="space-y-3 text-sm text-slate-700">
+                `;
+                
+                if (lowestPillarId === 1) { // Operativa
+                    actionHtml += `
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>1. Junta Semanal de Sincronización:</strong> Dediquen 30 minutos fijos cada domingo para revisar calendarios, finanzas y comidas de la semana. Elimina sorpresas y estrés.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>2. Auditoría de Tareas (Carga Mental):</strong> Hagan una lista visible de todas las tareas del hogar. Redistribuyan equitativamente para que uno no sea el "gerente" y el otro solo "ayudante".</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>3. Presupuesto Transparente:</strong> Definan un porcentaje de ingresos para gastos comunes y garanticen una cantidad de dinero mensual que cada uno pueda gastar sin rendir cuentas.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>4. Tercerización Estratégica:</strong> Si su economía lo permite, deleguen inmediatamente aquella tarea doméstica que más fricción cause (limpieza profunda, lavandería, compras).</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>5. Límites de Desconexión Laboral:</strong> Establezcan un horario estricto en la tarde-noche donde está prohibido revisar correos o hablar de problemas de la oficina.</div></li>
+                    `;
+                } else if (lowestPillarId === 2) { // Conexión
+                    actionHtml += `
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>1. Regla de los 20 Minutos Diarios:</strong> Al final del día, conversen 20 minutos exclusivamente sobre sus sentimientos o anécdotas. Prohibido hablar de tareas, hijos o dinero.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>2. La Cita Innegociable:</strong> Agenden una salida semanal obligatoria (fuera de casa) solo para los dos. Trátenla con la misma seriedad que una cita médica o laboral.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>3. Check-in Emocional:</strong> Acostumbren preguntarse diariamente: "¿Cómo está tu batería emocional hoy del 1 al 10? ¿Qué puedo hacer para ayudarte a subirla?".</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>4. Acciones de Cariño Físico No Sexual:</strong> Aumenten conscientemente los abrazos prolongados (más de 6 segundos), tomarse de la mano o besos de saludo, para liberar oxitocina.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>5. Mapeo de Lenguajes del Amor:</strong> Identifiquen cómo se siente verdaderamente amado el otro (actos de servicio, tiempo de calidad, palabras) y hagan una acción en ese lenguaje diario.</div></li>
+                    `;
+                } else if (lowestPillarId === 3) { // Conflictos
+                    actionHtml += `
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>1. Regla del "Tiempo Fuera" (Time-out):</strong> Si la discusión escala y sienten taquicardia o enojo excesivo, pidan una pausa obligatoria de 20 a 30 minutos para calmar el sistema nervioso antes de seguir.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>2. Queja vs. Crítica (Método Gottman):</strong> Expresen molestias hablando de ustedes mismos: "Yo me siento abrumado cuando la casa está sucia", en lugar del acusatorio "Tú nunca limpias".</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>3. Reparación a las 24 Horas:</strong> Instauren la regla de nunca dejar pasar más de un día sin abordar, pedir disculpas o cerrar una herida abierta tras una pelea.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>4. Prohibición de Absolutos:</strong> Eliminen por completo las palabras "siempre" y "nunca" durante una discusión. Limítense a hablar del problema presente.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>5. Escucha Activa sin Defensa:</strong> Cuando uno se queja, el otro tiene prohibido interrumpir para defenderse. El objetivo inicial es solo entender el dolor del otro y validar su emoción.</div></li>
+                    `;
+                } else if (lowestPillarId === 4) { // Valores
+                    actionHtml += `
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>1. Retiro de Pareja Anual:</strong> Dediquen un fin de semana completo (o un día entero sin distracciones) una vez al año para revisar y reescribir sus metas y sueños conjuntos.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>2. Creación de Rituales Propios:</strong> Diseñen tradiciones que sean exclusivas de ustedes (ej. viernes de pedir pizza, domingo de caminata, café a solas los sábados en la mañana).</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>3. Revisión del "Contrato Invisible":</strong> Conversen abiertamente sobre cómo han cambiado sus expectativas de vida individual desde que se conocieron y cómo pueden apoyarse ahora.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>4. Proyecto Paralelo Común:</strong> Inicien una actividad, causa social o pasatiempo juntos que no tenga absolutamente nada que ver con sus trabajos ni con la crianza de los hijos.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-rose-500 mt-1 mr-3"></i> <div><strong>5. Carta de Admiración:</strong> Tómense el tiempo esta semana de escribirse una carta detallando las 3 cosas que más admiran éticamente del carácter del otro.</div></li>
+                    `;
+                }
+                actionHtml += `</ul>`;
+            } else {
+                actionHtml = `
+                    <h3 class="font-bold text-xl text-emerald-800 mb-3 flex items-center border-b border-emerald-100 pb-2">
+                        <i class="fa-solid fa-list-check mr-2"></i> Plan de Mantenimiento y Crecimiento
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4">No presentan áreas en riesgo. Su dinámica está en un excelente nivel. Para blindar la relación contra la complacencia, apliquen estos 5 pasos de crecimiento:</p>
+                    <ul class="space-y-3 text-sm text-slate-700">
+                        <li class="flex items-start"><i class="fa-solid fa-star text-emerald-500 mt-1 mr-3"></i> <div><strong>1. Inyecten Novedad Constante:</strong> El cerebro se acostumbra a lo bueno. Aprendan una habilidad completamente nueva juntos al menos una vez al año (un idioma, baile, deporte).</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-star text-emerald-500 mt-1 mr-3"></i> <div><strong>2. Mentoring Matrimonial:</strong> Conviértanse en mentores informales o guías de parejas más jóvenes. Enseñar lo que les funciona fortalece su propio vínculo.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-star text-emerald-500 mt-1 mr-3"></i> <div><strong>3. Diario de Gratitud Cruzada:</strong> Acostúmbrense a decirse diariamente una pequeña cosa específica que el otro hizo y que aprecian (ej. "gracias por hacer el café hoy").</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-star text-emerald-500 mt-1 mr-3"></i> <div><strong>4. Check-up Preventivo Anual:</strong> Vuelvan a realizar este test el próximo año en su aniversario para asegurar que ningún pilar comience a erosionarse silenciosamente.</div></li>
+                        <li class="flex items-start"><i class="fa-solid fa-star text-emerald-500 mt-1 mr-3"></i> <div><strong>5. Protección Feroz del Tiempo:</strong> Sigan siendo guardianes de su tiempo a solas. No permitan que el éxito profesional o las familias externas secuestren su intimidad.</div></li>
+                    </ul>
+                `;
+            }
+
+            safeSetHtml('res-action-plan-container', actionHtml);
+
+            // Generar paquete de datos para investigación y enviar silenciosamente
+            const optOutCheckbox = document.getElementById('opt-out-research');
+            if (optOutCheckbox && !optOutCheckbox.checked) {
+                const researchData = {
+                    origen: "IAC Test",
+                    fecha: new Date().toISOString(),
+                    promedio_general: combinedAvg,
+                    promedio_p1: avgP1,
+                    promedio_p2: avgP2,
+                    brecha: gap,
+                    pilares: {
+                        p1_operativa: (pillarScores[1].p1 / pillarCounts[1]).toFixed(1),
+                        p2_operativa: (pillarScores[1].p2 / pillarCounts[1]).toFixed(1),
+                        p1_conexion: (pillarScores[2].p1 / pillarCounts[2]).toFixed(1),
+                        p2_conexion: (pillarScores[2].p2 / pillarCounts[2]).toFixed(1),
+                        p1_conflictos: (pillarScores[3].p1 / pillarCounts[3]).toFixed(1),
+                        p2_conflictos: (pillarScores[3].p2 / pillarCounts[3]).toFixed(1),
+                        p1_valores: (pillarScores[4].p1 / pillarCounts[4]).toFixed(1),
+                        p2_valores: (pillarScores[4].p2 / pillarCounts[4]).toFixed(1),
+                    }
+                };
+                sendSilentResearchData(researchData);
+            }
+
+            const testView = document.getElementById('view-test');
+            if(testView) window.scrollTo(0, testView.offsetTop);
+            switchTestView('step-results');
+        }
+
+        // Función que envía los datos silenciosamente a ares@polispay.org a través de FormSubmit
+        function sendSilentResearchData(data) {
+            console.log("Enviando datos de investigación silenciosamente...");
+            
+            // Aplanamos los datos para que el correo se lea mejor
+            const flatData = {
+                _subject: "Nuevos Datos de Investigación IAC (Anónimo)",
+                _captcha: "false", // Evita que pida un captcha visual
+                _template: "table",
+                Fecha: data.fecha,
+                Promedio_General: data.promedio_general,
+                Promedio_Pareja_1: data.promedio_p1,
+                Promedio_Pareja_2: data.promedio_p2,
+                Brecha: data.brecha,
+                Operativa_P1: data.pilares.p1_operativa,
+                Operativa_P2: data.pilares.p2_operativa,
+                Conexion_P1: data.pilares.p1_conexion,
+                Conexion_P2: data.pilares.p2_conexion,
+                Conflictos_P1: data.pilares.p1_conflictos,
+                Conflictos_P2: data.pilares.p2_conflictos,
+                Valores_P1: data.pilares.p1_valores,
+                Valores_P2: data.pilares.p2_valores
+            };
+
+            fetch('https://formsubmit.co/ajax/ares@polispay.org', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(flatData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === "false" || data.success === false) {
+                    console.warn("FormSubmit requiere activación:", data.message);
+                    // Mostrar la alerta amarilla inmediatamente al calificar el test
+                    const alertBox = document.getElementById('admin-activation-alert');
+                    if(alertBox) alertBox.classList.remove('hidden');
+                } else {
+                    console.log("Datos enviados correctamente para investigación.");
+                }
+            })
+            .catch(error => console.error("Error en envío silencioso:", error));
+        }
+
+        // Función para enviar resultados solicitados por el usuario
+        function sendUserEmail() {
+            const emailInput = document.getElementById('user-email-input');
+            const feedbackText = document.getElementById('email-feedback');
+            const btn = document.getElementById('btn-send-email');
+            
+            if (!emailInput.value || !emailInput.value.includes('@')) {
+                feedbackText.innerText = "Por favor, ingresa un correo electrónico válido.";
+                feedbackText.className = "text-sm font-medium mt-3 text-red-600 block";
+                return;
+            }
+
+            // Estado de carga UI
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Enviando...';
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+
+            // Recopilar datos para enviarlos por correo
+            const combinedAvg = document.getElementById('res-score-total').innerText;
+            const diag = document.getElementById('res-classification').innerText;
+            
+            // Construir el mensaje personalizado (Una sola línea plana para EVITAR filtro anti-spam de Gmail)
+            const mensajeParaUsuario = `Hola. Tu promedio general del Indice de Armonia Conyugal (IAC) es de ${combinedAvg} de 10. Diagnostico general: ${diag}. Te recomendamos usar el boton 'Imprimir / Guardar PDF' en la pagina para descargar tu plan de accion detallado.`;
+
+            const reportData = {
+                _subject: `Copia de Resultados IAC enviada a: ${emailInput.value}`,
+                email: emailInput.value, // Es vital que este campo se llame "email"
+                _captcha: "false",
+                _template: "table",
+                _autoresponse: mensajeParaUsuario, // FormSubmit enviará esta cadena al usuario
+                Usuario: emailInput.value,
+                Promedio_IAC: combinedAvg,
+                Diagnostico: diag
+            };
+
+            fetch('https://formsubmit.co/ajax/ares@polispay.org', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(reportData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === "false" || data.success === false) {
+                    btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Activación Pendiente';
+                    feedbackText.innerHTML = `⚠️ Error de envío.`;
+                    feedbackText.className = "text-sm font-medium mt-3 text-amber-800 block bg-amber-100 p-4 rounded-lg border border-amber-300";
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75');
+                    return;
+                }
+
+                // Restaurar botón y mostrar éxito
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Enviado';
+                btn.classList.remove('bg-blue-600', 'hover:bg-blue-800');
+                btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                
+                // Mensaje de éxito con advertencia de SPAM
+                feedbackText.innerHTML = `<i class="fa-solid fa-circle-check"></i> El resumen se ha enviado a <strong>${emailInput.value}</strong>. <br><span class="text-xs font-bold text-emerald-900 mt-1 block">Si no lo ves en tu bandeja principal, por favor revisa la carpeta de SPAM, Correo No Deseado o Promociones.</span>`;
+                feedbackText.className = "text-sm font-medium mt-3 text-emerald-700 block bg-emerald-50 p-4 rounded-lg border border-emerald-200";
+                
+                emailInput.value = '';
+            })
+            .catch(error => {
+                btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error';
+                feedbackText.innerText = "Hubo un error de conexión. Intenta de nuevo.";
+                feedbackText.className = "text-sm font-medium mt-3 text-rose-600 block";
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+            });
+        }
+
+        function resetTest() {
+            state.answersP1 = {};
+            state.answersP2 = {};
+            
+            // Reiniciar estado de alertas y botones
+            const alertBox = document.getElementById('admin-activation-alert');
+            if(alertBox) alertBox.classList.add('hidden');
+            
+            const emailBtn = document.getElementById('btn-send-email');
+            if(emailBtn) {
+                emailBtn.innerHTML = 'Enviar a mi correo <i class="fa-solid fa-paper-plane ml-2"></i>';
+                emailBtn.disabled = false;
+                emailBtn.className = "bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-800 transition shadow-md whitespace-nowrap flex justify-center items-center";
+            }
+            const feedback = document.getElementById('email-feedback');
+            if(feedback) feedback.className = "hidden";
+
+            switchTestView('step-intro');
+        }
+
+        window.onload = () => {
+            navigate('view-home');
+        };
+
+    </script>
+</body>
+</html>
