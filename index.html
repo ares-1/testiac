@@ -24,10 +24,10 @@
     </script>
     <style>
         .score-radio:checked + label {
-            background-color: #0ea5e9;
+            background-color: #0369a1; /* brand-700 */
             color: white;
-            border-color: #0ea5e9;
-            transform: scale(1.1);
+            border-color: #0369a1;
+            transform: scale(1.05);
         }
         .score-label { transition: all 0.2s ease-in-out; }
         .score-label:hover { background-color: #e0f2fe; border-color: #0ea5e9; }
@@ -458,11 +458,7 @@
     <section id="view-test" class="view-section py-16 px-4">
         <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden min-h-[500px]" id="test-container-box">
             
-            <div id="progress-bar-container" class="h-2 bg-slate-100 hidden no-print">
-                <div id="progress-bar" class="h-full bg-brand-500 transition-all duration-300 w-0"></div>
-            </div>
-
-            <div class="p-8 md:p-12">
+            <div class="p-6 md:p-10">
                 
                 <!-- Pantalla 1: Instrucciones -->
                 <div id="step-intro" class="text-center space-y-6 smooth-show">
@@ -471,7 +467,7 @@
                     </div>
                     <h2 class="text-3xl font-serif font-bold">Diagnóstico IAC en Pareja</h2>
                     <p class="text-slate-600 leading-relaxed max-w-2xl mx-auto">
-                        Este test de 15 preguntas revelará el nivel de su relación en los 4 pilares: Operativa, Intimidad, Conflictos y Valores. Identificará si su relación está funcionando como un verdadero "Efecto Amortiguador".
+                        Este test integral de <strong>40 preguntas</strong> revelará el nivel de su relación en los 4 pilares: Operativa, Intimidad, Conflictos y Valores. Identificará si su relación está funcionando como un verdadero "Efecto Amortiguador".
                     </p>
                     <div class="bg-amber-50 border border-amber-100 text-amber-800 p-4 rounded-lg text-sm text-left flex gap-3 max-w-2xl mx-auto">
                         <i class="fa-solid fa-triangle-exclamation mt-1"></i>
@@ -499,23 +495,34 @@
                     </button>
                 </div>
 
-                <!-- Pantalla 2: Preguntas -->
+                <!-- Pantalla 2: Preguntas Paginadas -->
                 <div id="step-questions" class="smooth-hide">
                     <div class="flex justify-between items-center mb-6">
                         <span id="partner-badge" class="bg-brand-100 text-brand-800 px-3 py-1 rounded-full text-sm font-bold border border-brand-200">
                             Turno: Pareja 1
                         </span>
-                        <span class="text-sm font-medium text-slate-400" id="question-counter">Evaluación en progreso</span>
                     </div>
 
-                    <div id="questions-container" class="space-y-8">
-                        <!-- Las preguntas se inyectan por JS -->
+                    <!-- Contenedor dinámico de preguntas -->
+                    <div id="questions-container">
+                        <!-- Las preguntas se inyectan por JS (10 por página) -->
                     </div>
 
-                    <div class="mt-10 border-t pt-6 flex justify-between items-center">
-                        <span id="error-msg" class="text-red-500 text-sm font-medium hidden">Por favor, responde todas las preguntas.</span>
-                        <button onclick="submitPartner()" class="ml-auto bg-slate-800 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-slate-900 transition">
-                            Finalizar mi turno <i class="fa-solid fa-check ml-2"></i>
+                    <!-- Barra de progreso al final del cuestionario -->
+                    <div class="mt-8 mb-6">
+                        <div class="flex justify-between text-sm text-slate-500 font-medium mb-2 px-1">
+                            <span>Avance total del test</span>
+                            <span id="progress-text">0 / 40 completadas</span>
+                        </div>
+                        <div class="h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                            <div id="progress-bar" class="h-full bg-brand-500 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <span id="error-msg" class="text-red-500 text-sm font-medium hidden text-center sm:text-left"><i class="fa-solid fa-circle-exclamation mr-1"></i> Por favor, responde todas las preguntas de esta página.</span>
+                        <button id="btn-next-page" onclick="nextPage()" class="w-full sm:w-auto bg-brand-700 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-brand-900 transition sm:ml-auto">
+                            Siguiente <i class="fa-solid fa-arrow-right ml-2"></i>
                         </button>
                     </div>
                 </div>
@@ -549,8 +556,8 @@
                             <h2 class="text-3xl font-serif font-bold text-slate-800">Resultados del Análisis</h2>
                             <p class="text-slate-500 mt-1">Diagnóstico basado en la percepción conjunta.</p>
                         </div>
-                        <button onclick="window.print()" class="text-slate-600 hover:text-brand-700 font-medium text-sm flex items-center bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition shadow-sm">
-                            <i class="fa-solid fa-file-pdf mr-2 text-red-500"></i> Imprimir / Guardar PDF
+                        <button onclick="window.print()" class="text-slate-600 hover:text-brand-700 font-medium text-sm flex items-center bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition shadow-sm hidden md:flex">
+                            <i class="fa-solid fa-file-pdf mr-2 text-red-500"></i> Guardar PDF
                         </button>
                     </div>
 
@@ -614,11 +621,11 @@
                     </div>
 
                     <!-- Imprimir / Guardar PDF (Inferior) -->
-                    <div class="bg-slate-50 p-6 md:p-8 rounded-xl border border-slate-200 shadow-sm mb-8 no-print text-center">
-                        <h3 class="font-bold text-xl text-slate-800 mb-2">Guarda tu Reporte Clínico</h3>
-                        <p class="text-sm text-slate-600 mb-6 max-w-xl mx-auto">Te recomendamos ampliamente guardar este reporte en PDF o imprimirlo para poder analizar tu diagnóstico y plan de acción en pareja detalladamente.</p>
-                        <button onclick="window.print()" class="w-full sm:w-auto inline-flex justify-center items-center bg-rose-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-rose-800 transition shadow-lg text-lg transform hover:-translate-y-1">
-                            <i class="fa-solid fa-file-pdf mr-3 text-2xl"></i> Imprimir / Guardar PDF
+                    <div class="bg-slate-50 p-6 md:p-10 rounded-xl border border-slate-200 shadow-sm mb-8 no-print text-center">
+                        <h3 class="font-bold text-2xl text-slate-800 mb-3">Guarda tu Reporte Clínico</h3>
+                        <p class="text-sm text-slate-600 mb-8 max-w-xl mx-auto">Te recomendamos ampliamente guardar este reporte en PDF o imprimirlo para poder analizar tu diagnóstico y plan de acción en pareja detalladamente.</p>
+                        <button onclick="window.print()" class="w-full sm:w-auto inline-flex justify-center items-center bg-rose-600 text-white px-10 py-5 rounded-xl font-bold hover:bg-rose-800 transition shadow-lg text-lg transform hover:-translate-y-1">
+                            <i class="fa-solid fa-file-pdf mr-3 text-3xl"></i> Imprimir / Guardar en PDF
                         </button>
                     </div>
 
@@ -673,7 +680,7 @@
 
     <!-- Logic Script -->
     <script>
-        // --- Funciones de manipulación segura del DOM (Null-Checks) ---
+        // --- Funciones de manipulación segura del DOM ---
         const safeSetText = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
         const safeSetHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
         const safeSetClass = (id, cls) => { const el = document.getElementById(id); if (el) el.className = cls; };
@@ -705,23 +712,55 @@
             window.scrollTo(0,0);
         }
 
-        // --- 1. Definición de Datos ---
+        // --- 1. Definición de Datos (40 Preguntas en 4 Pilares) ---
         const questions = [
-            { id: 'q1', pilar: 1, text: "Sentimos que somos un equipo eficiente manejando la casa, los problemas logísticos y el presupuesto." },
-            { id: 'q2', pilar: 1, text: "Estamos de acuerdo en cómo administramos e invertimos nuestros recursos." },
-            { id: 'q3', pilar: 1, text: "El reparto de responsabilidades en el hogar nos parece justo y equilibrado a ambos." },
-            { id: 'q4', pilar: 1, text: "Logramos equilibrar nuestras ambiciones y tiempos de trabajo con la vida familiar." },
-            { id: 'q5', pilar: 2, text: "Siento que mi pareja es la primera persona a la que quiero contarle una buena o mala noticia." },
-            { id: 'q6', pilar: 2, text: "Mantenemos espacios de pareja (citas, charlas íntimas) dedicados solo a nosotros, sin hablar de obligaciones." },
-            { id: 'q7', pilar: 2, text: "Me siento profundamente escuchado/a y validado/a emocionalmente cuando expreso una vulnerabilidad o miedo." },
-            { id: 'q8', pilar: 2, text: "Existe una vida íntima, de contacto físico y afectiva que me satisface plenamente." },
-            { id: 'q9', pilar: 3, text: "Podemos discutir temas difíciles sin caer en ataques personales, insultos o evasión (ley del hielo)." },
-            { id: 'q10', pilar: 3, text: "Después de una pelea o malentendido, logramos reparar la conexión rápidamente y sin guardar rencor." },
-            { id: 'q11', pilar: 3, text: "Siento que puedo ser yo mismo/a; no tengo que 'caminar sobre cáscaras de huevo' para evitar que el otro explote." },
-            { id: 'q12', pilar: 3, text: "En los desacuerdos, priorizamos el bienestar de la relación en lugar de llevar la cuenta de 'quién tiene la razón'." },
-            { id: 'q13', pilar: 4, text: "Compartimos la misma visión fundamental sobre la vida, ética, metas y desarrollo personal/familiar." },
-            { id: 'q14', pilar: 4, text: "Siento un profundo respeto y admiración por el ser humano en el que se ha convertido mi pareja." },
-            { id: 'q15', pilar: 4, text: "Siento total seguridad de que el compromiso de mi pareja hacia nuestra relación es sólido ante cualquier crisis a largo plazo." }
+            // PÁGINA 1: CONEXIÓN E INTIMIDAD (Pilar 2)
+            { id: 'q1', pilar: 2, text: "Me siento emocionalmente cercano/a a mi pareja en el día a día." },
+            { id: 'q2', pilar: 2, text: "Conozco los sueños, miedos y preocupaciones actuales de mi pareja." },
+            { id: 'q3', pilar: 2, text: "Mi pareja me escucha con atención cuando le comparto algo importante." },
+            { id: 'q4', pilar: 2, text: "Nos reímos juntos con frecuencia y disfrutamos momentos de complicidad." },
+            { id: 'q5', pilar: 2, text: "Me siento libre de ser vulnerable con mi pareja sin temor a ser juzgado/a." },
+            { id: 'q6', pilar: 2, text: "Tenemos conversaciones reales -más allá de logística- al menos una vez a la semana." },
+            { id: 'q7', pilar: 2, text: "Siento que mi pareja se interesa genuinamente por mi mundo interior." },
+            { id: 'q8', pilar: 2, text: "Cuando algo me preocupa, mi primera reacción es querer contárselo a mi pareja." },
+            { id: 'q9', pilar: 2, text: "Existe contacto físico afectivo (no necesariamente sexual) en nuestra vida cotidiana." },
+            { id: 'q10', pilar: 2, text: "Me siento visto/a y valorado/a por mi pareja tal como soy." },
+            
+            // PÁGINA 2: GESTIÓN DE CONFLICTOS (Pilar 3)
+            { id: 'q11', pilar: 3, text: "Cuando discutimos, atacamos el problema y no a la persona." },
+            { id: 'q12', pilar: 3, text: "Somos capaces de pausar una discusión cuando el tono se vuelve destructivo." },
+            { id: 'q13', pilar: 3, text: "Después de una pelea, buscamos reconciliarnos de verdad, no solo 'pasar la página'." },
+            { id: 'q14', pilar: 3, text: "Me siento escuchado/a cuando expreso una queja o inconformidad." },
+            { id: 'q15', pilar: 3, text: "Existe espacio para que ambos expresemos opiniones distintas sin ganadores ni perdedores." },
+            { id: 'q16', pilar: 3, text: "Evitamos el sarcasmo, las críticas globales ('siempre', 'nunca') y el desprecio." },
+            { id: 'q17', pilar: 3, text: "Somos capaces de pedir perdón de manera sincera y de recibirlo." },
+            { id: 'q18', pilar: 3, text: "Hay temas difíciles que podemos hablar sin que se conviertan en guerra." },
+            { id: 'q19', pilar: 3, text: "Los conflictos que tenemos suelen tener algún tipo de resolución real." },
+            { id: 'q20', pilar: 3, text: "Después de un desacuerdo, nuestra relación no queda dañada de manera permanente." },
+            
+            // PÁGINA 3: SINERGIA OPERATIVA (Pilar 1)
+            { id: 'q21', pilar: 1, text: "Tomamos las decisiones importantes de la familia de manera conjunta." },
+            { id: 'q22', pilar: 1, text: "Hay equidad en la distribución de responsabilidades del hogar." },
+            { id: 'q23', pilar: 1, text: "Celebramos los logros del otro con genuino entusiasmo." },
+            { id: 'q24', pilar: 1, text: "Cuando uno de los dos está pasando un momento difícil, el otro está presente." },
+            { id: 'q25', pilar: 1, text: "Tenemos al menos una actividad que disfrutamos hacer juntos regularmente." },
+            { id: 'q26', pilar: 1, text: "Hablamos del dinero y las finanzas sin que genere tensión excesiva." },
+            { id: 'q27', pilar: 1, text: "Me siento apoyado/a en mis proyectos personales por mi pareja." },
+            { id: 'q28', pilar: 1, text: "Somos un equipo efectivo cuando se trata de criar a nuestros hijos (si aplica)." },
+            { id: 'q29', pilar: 1, text: "Hay reciprocidad en la relación: no siento que uno da más que el otro permanentemente." },
+            { id: 'q30', pilar: 1, text: "Cuando tengo un problema externo, mi pareja es un recurso, no una carga adicional." },
+            
+            // PÁGINA 4: IDENTIDAD Y VALORES (Pilar 4)
+            { id: 'q31', pilar: 4, text: "Tenemos metas comunes claras como pareja a corto, mediano o largo plazo." },
+            { id: 'q32', pilar: 4, text: "Compartimos valores fundamentales que guían las decisiones de nuestra familia." },
+            { id: 'q33', pilar: 4, text: "Sabemos qué tipo de matrimonio queremos ser y trabajamos hacia ello." },
+            { id: 'q34', pilar: 4, text: "Tenemos un proyecto de vida que nos entusiasma a ambos." },
+            { id: 'q35', pilar: 4, text: "Nuestra relación tiene un 'para qué' que va más allá de la rutina diaria." },
+            { id: 'q36', pilar: 4, text: "Hablamos del futuro juntos con ilusión, no solo con preocupación." },
+            { id: 'q37', pilar: 4, text: "Cuando pienso en el camino por delante, me siento motivado/a de recorrerlo con mi pareja." },
+            { id: 'q38', pilar: 4, text: "Hay tradiciones o rituales que cultivamos como familia intencionalmente." },
+            { id: 'q39', pilar: 4, text: "Sentimos que estamos creciendo juntos, no estancados." },
+            { id: 'q40', pilar: 4, text: "Si describiera nuestra relación en una frase, habría algo más que 'nos llevamos bien'." }
         ];
 
         const pilarData = {
@@ -735,7 +774,13 @@
         const mxAverages = { 1: 8.5, 2: 6.0, 3: 5.5, 4: 8.0 };
 
         // --- 2. Estado de la Aplicación ---
-        let state = { currentPartner: 1, answersP1: {}, answersP2: {} };
+        let state = { 
+            currentPartner: 1, 
+            currentPage: 0, // 0 a 3 (4 páginas)
+            tempAnswers: {}, // Respuestas temporales del turno en curso
+            answersP1: {}, 
+            answersP2: {} 
+        };
 
         // --- 3. Funciones de UI Test ---
         function switchTestView(viewId) {
@@ -752,24 +797,42 @@
         function renderQuestions() {
             const container = document.getElementById('questions-container');
             if(!container) return;
-            container.innerHTML = ''; 
+            
+            // Calcular bloque de 10 preguntas
+            const startIdx = state.currentPage * 10;
+            const endIdx = startIdx + 10;
+            const currentQs = questions.slice(startIdx, endIdx);
 
-            let htmlChunk = '';
-            questions.forEach((q, index) => {
+            // Obtener el título del Pilar de esta página
+            const pilarId = currentQs[0].pilar;
+            const pilarInfo = pilarData[pilarId];
+
+            let htmlChunk = `
+            <div class="mb-6 pb-4 border-b border-slate-200 flex justify-between items-end">
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-800"><i class="fa-solid ${pilarInfo.icon} ${pilarInfo.color} mr-2"></i> Sección: ${pilarInfo.name}</h3>
+                </div>
+                <div class="text-sm font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-lg">Pág. ${state.currentPage + 1} de 4</div>
+            </div>`;
+
+            currentQs.forEach((q, index) => {
+                const actualIndex = startIdx + index + 1;
                 htmlChunk += `
-                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm question-block" id="block-${q.id}">
-                    <p class="text-lg font-medium text-slate-800 mb-4"><span class="text-brand-500 font-bold mr-2">${index + 1}.</span> ${q.text}</p>
-                    <div class="flex justify-between text-xs text-slate-500 mb-2 px-1 font-medium">
-                        <span>1. Totalmente en desacuerdo</span>
-                        <span>10. Totalmente de acuerdo</span>
+                <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm question-block mb-4" id="block-${q.id}">
+                    <p class="text-[15px] sm:text-base font-medium text-slate-800 mb-3"><span class="text-brand-500 font-bold mr-1">${actualIndex}.</span> ${q.text}</p>
+                    <div class="flex justify-between text-[10px] sm:text-xs text-slate-400 mb-1 px-1 font-semibold uppercase tracking-wider">
+                        <span>En desacuerdo</span>
+                        <span>De acuerdo</span>
                     </div>
-                    <div class="flex justify-between gap-1 sm:gap-2">
+                    <div class="flex justify-between gap-1">
                 `;
+                // Renderizar escala del 1 al 10 comprimida
                 for (let i = 1; i <= 10; i++) {
+                    const isChecked = state.tempAnswers[q.id] === i ? 'checked' : '';
                     htmlChunk += `
-                        <div class="relative w-full">
-                            <input type="radio" name="${q.id}" id="${q.id}_${i}" value="${i}" class="score-radio absolute opacity-0 w-0 h-0" onchange="updateProgress()">
-                            <label for="${q.id}_${i}" class="score-label w-full aspect-square flex items-center justify-center rounded-lg border border-slate-300 text-slate-700 cursor-pointer font-bold text-sm sm:text-base bg-white hover:border-brand-500">
+                        <div class="flex-1 relative">
+                            <input type="radio" name="${q.id}" id="${q.id}_${i}" value="${i}" class="score-radio absolute opacity-0 w-0 h-0" onchange="handleRadioChange('${q.id}', ${i})" ${isChecked}>
+                            <label for="${q.id}_${i}" class="score-label w-full py-2 flex items-center justify-center rounded-lg border border-slate-300 text-slate-600 cursor-pointer font-bold text-xs sm:text-sm bg-slate-50 hover:border-brand-500 hover:bg-white shadow-sm">
                                 ${i}
                             </label>
                         </div>
@@ -778,23 +841,44 @@
                 htmlChunk += `</div></div>`;
             });
             container.innerHTML = htmlChunk;
+
+            // Actualizar el botón de navegación (Corregido el color a brand-700)
+            const btn = document.getElementById('btn-next-page');
+            if(btn) {
+                if (state.currentPage === 3) {
+                    btn.innerHTML = 'Finalizar mi turno <i class="fa-solid fa-check ml-2"></i>';
+                    btn.className = "w-full sm:w-auto bg-slate-800 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-slate-900 transition sm:ml-auto";
+                } else {
+                    btn.innerHTML = 'Siguiente <i class="fa-solid fa-arrow-right ml-2"></i>';
+                    btn.className = "w-full sm:w-auto bg-brand-700 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-brand-900 transition sm:ml-auto";
+                }
+            }
+            
+            // Subir al inicio de las preguntas al cambiar de página
+            const testView = document.getElementById('view-test');
+            if(testView) window.scrollTo(0, testView.offsetTop);
+        }
+
+        function handleRadioChange(qId, val) {
+            state.tempAnswers[qId] = parseInt(val);
+            updateProgress();
+            safeRemoveClass(`block-${qId}`, 'border-red-400');
+            safeRemoveClass(`block-${qId}`, 'bg-red-50');
+            safeAddClass('error-msg', 'hidden');
         }
 
         function updateProgress() {
-            const total = questions.length;
-            let answered = 0;
-            questions.forEach(q => {
-                if(document.querySelector(`input[name="${q.id}"]:checked`)) answered++;
-            });
+            const total = 40;
+            const answered = Object.keys(state.tempAnswers).length;
             const percent = (answered / total) * 100;
             safeSetStyle('progress-bar', 'width', `${percent}%`);
-            safeAddClass('error-msg', 'hidden');
+            safeSetText('progress-text', `${answered} / 40 completadas`);
         }
 
         function startTest(partnerNum) {
             state.currentPartner = partnerNum;
-            safeRemoveClass('progress-bar-container', 'hidden');
-            safeSetStyle('progress-bar', 'width', '0%');
+            state.tempAnswers = {};
+            state.currentPage = 0;
             
             const badge = document.getElementById('partner-badge');
             if(badge) {
@@ -808,25 +892,28 @@
             }
 
             renderQuestions(); 
-            const testView = document.getElementById('view-test');
-            if(testView) window.scrollTo(0, testView.offsetTop);
+            updateProgress();
             switchTestView('step-questions');
         }
 
-        function submitPartner() {
+        // Reemplaza al antiguo submitPartner y maneja la validación por página
+        function nextPage() {
+            // Verificar las 10 preguntas de la página actual
+            const startIdx = state.currentPage * 10;
+            const endIdx = startIdx + 10;
+            const currentQs = questions.slice(startIdx, endIdx);
+            
             let allAnswered = true;
-            let currentAnswers = {};
 
-            questions.forEach(q => {
-                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
-                if (selected) {
-                    currentAnswers[q.id] = parseInt(selected.value);
-                } else {
+            currentQs.forEach(q => {
+                if (!state.tempAnswers[q.id]) {
                     allAnswered = false;
                     const block = document.getElementById(`block-${q.id}`);
                     if(block) {
                         block.classList.add('border-red-400', 'bg-red-50');
-                        setTimeout(() => block.classList.remove('border-red-400', 'bg-red-50'), 2000);
+                        setTimeout(() => {
+                            block.classList.remove('border-red-400', 'bg-red-50');
+                        }, 2000);
                     }
                 }
             });
@@ -836,15 +923,21 @@
                 return;
             }
 
-            if (state.currentPartner === 1) {
-                state.answersP1 = currentAnswers;
-                const testView = document.getElementById('view-test');
-                if(testView) window.scrollTo(0, testView.offsetTop);
-                switchTestView('step-interstitial');
+            // Si todo está contestado, avanzar
+            if (state.currentPage < 3) {
+                state.currentPage++;
+                renderQuestions();
             } else {
-                state.answersP2 = currentAnswers;
-                safeAddClass('progress-bar-container', 'hidden');
-                calculateResults();
+                // Se completaron las 4 páginas
+                if (state.currentPartner === 1) {
+                    // Clonar las respuestas temporales hacia Pareja 1
+                    state.answersP1 = {...state.tempAnswers};
+                    switchTestView('step-interstitial');
+                } else {
+                    // Clonar las respuestas temporales hacia Pareja 2 y calcular
+                    state.answersP2 = {...state.tempAnswers};
+                    calculateResults();
+                }
             }
         }
 
@@ -855,41 +948,60 @@
             let pillarCounts = { 1:0, 2:0, 3:0, 4:0 };
 
             questions.forEach(q => {
+                // Se toman los valores directamente porque ahora es de 1 a 10
                 const val1 = state.answersP1[q.id] || 0;
                 const val2 = state.answersP2[q.id] || 0;
-                totalP1 += val1; totalP2 += val2;
+                
+                totalP1 += val1; 
+                totalP2 += val2;
                 pillarScores[q.pilar].p1 += val1;
                 pillarScores[q.pilar].p2 += val2;
                 pillarCounts[q.pilar] += 1;
             });
 
-            const avgP1 = (totalP1 / 15).toFixed(1);
-            const avgP2 = (totalP2 / 15).toFixed(1);
-            const combinedAvg = (((totalP1 + totalP2) / 2) / 15).toFixed(1);
+            // Promedio dividido entre 40 preguntas (Escala sobre 10 puntos)
+            const avgP1 = (totalP1 / 40).toFixed(1);
+            const avgP2 = (totalP2 / 40).toFixed(1);
+            const combinedAvg = (((totalP1 + totalP2) / 2) / 40).toFixed(1);
             const gap = Math.abs(avgP1 - avgP2).toFixed(1);
 
             safeSetText('res-score-total', combinedAvg);
             safeSetText('res-score-p1', avgP1);
             safeSetText('res-score-p2', avgP2);
 
-            // Análisis General (Hoja 1)
+            // Análisis General: 10 Tiers (Rangos) Diagnósticos
             let classText = "", classColor = "", baseDiag = "";
 
-            if (combinedAvg >= 9.0) {
-                classText = "Sinergia Real (Excelente)"; classColor = "bg-emerald-600";
-                baseDiag = "<p>Su relación se encuentra en el decil superior de armonía. Muestran un nivel excepcional de compañerismo, validación y logística funcional. El <em>Efecto Amortiguador</em> frente al estrés externo está en su máxima capacidad de protección neurobiológica.</p>";
+            if (combinedAvg >= 9.5) {
+                classText = "Sinergia Extraordinaria"; classColor = "bg-emerald-600";
+                baseDiag = "<p>Su relación opera en el nivel más alto y excelente posible. Muestran una conexión brillante en intimidad y logística, creando un refugio emocional perfecto frente al estrés externo. <br><br><strong>Recomendación Principal:</strong> ¡Conviértanse en mentores! Su dinámica es tan saludable que puede inspirar enormemente a las parejas más jóvenes de su entorno. Cuenten sus secretos de éxito.</p>";
+            } else if (combinedAvg >= 8.5) {
+                classText = "Armonía Excelente"; classColor = "bg-emerald-500";
+                baseDiag = "<p>Poseen una conexión sumamente fuerte y saludable. Logran resolver conflictos de forma madura y mantienen una excelente logística operativa en su vida diaria, con un gran pronóstico a largo plazo. <br><br><strong>Recomendación Principal:</strong> Blinden su relación contra la complacencia del éxito. Sigan agendando 'citas innegociables' para salir solos sin hablar de las responsabilidades diarias.</p>";
             } else if (combinedAvg >= 7.5) {
-                classText = "Armonía Sólida (Muy Bien)"; classColor = "bg-teal-600";
-                baseDiag = "<p>Su relación es muy fuerte y funciona como un verdadero equipo. Poseen bases sólidas en valores y en la administración del hogar. El reto preventivo es no permitir que la rutina convierta el matrimonio en un 'proyecto funcional' en lugar de un vínculo afectivo vital.</p>";
+                classText = "Estabilidad Sólida"; classColor = "bg-teal-500";
+                baseDiag = "<p>Su relación es muy estable y funciona verdaderamente bien como un equipo ante las adversidades externas. Tienen bases profundas de lealtad y cooperación. <br><br><strong>Recomendación Principal:</strong> El mayor riesgo aquí es que la rutina silencie el romance. Inyecten novedad aprendiendo una actividad totalmente nueva juntos (ej. un idioma, bailar, un deporte) para estimular el asombro mutuo.</p>";
             } else if (combinedAvg >= 6.5) {
-                classText = "Estabilidad Funcional (Promedio)"; classColor = "bg-blue-600";
-                baseDiag = "<p>Este es el nivel clásico de muchas parejas contemporáneas. Suelen funcionar excelente como socios, pero la conexión íntima o la paciencia mutua están experimentando desgaste. Existe un riesgo latente de caer en 'disonancia cognitiva': justificar la lejanía emocional por lo bien que administran el día a día.</p>";
-            } else if (combinedAvg >= 5.0) {
-                classText = "Zona de Tensión (Alerta)"; classColor = "bg-amber-600";
-                baseDiag = "<p>La relación está operando bajo presión evidente. El hogar se está volviendo una fuente de estrés en lugar de un refugio, impidiendo que el Efecto Amortiguador funcione. Es fundamental hacer una pausa y redirigir esfuerzos hacia el cuidado mutuo y la reparación emocional.</p>";
+                classText = "Funcionalidad Fuerte"; classColor = "bg-cyan-600";
+                baseDiag = "<p>Son muy buenos socios para sacar adelante la vida, la economía y (si los hay) a los hijos. Tienen las piezas de una gran relación, pero a veces parece más un negocio que un romance. <br><br><strong>Recomendación Principal:</strong> Cuidado con que la logística devore a la pareja. Implementen la 'Regla de los 20 minutos': cada noche dediquen 20 minutos a hablar solo de lo que sienten, prohibido hablar de la casa o los niños.</p>";
+            } else if (combinedAvg >= 5.5) {
+                classText = "Zonas de Oportunidad"; classColor = "bg-blue-500";
+                baseDiag = "<p>Este es el nivel clásico y central de la pareja moderna ocupada. Existe cariño e historia juntos, pero el cansancio y el estrés externo les están robando la paciencia para conectar profundamente. <br><br><strong>Recomendación Principal:</strong> Hagan una 'Auditoría de Carga Mental'. Si un pilar está bajo, casi siempre es porque uno de los dos asume demasiadas responsabilidades silenciosas. Redistribuyan las cargas y responsabilidades familiares.</p>";
+            } else if (combinedAvg >= 4.5) {
+                classText = "Desgaste Inicial"; classColor = "bg-indigo-500";
+                baseDiag = "<p>Se comienzan a notar señales evidentes de erosión. La comunicación ya no fluye tan fácilmente y los pequeños roces cotidianos a veces escalan a pleitos sin sentido por la acumulación de cansancio. <br><br><strong>Recomendación Principal:</strong> Usen la regla del 'Tiempo Fuera' en sus discusiones. Si el enojo y el ritmo cardíaco suben, pausen la pelea obligatoriamente por 20 minutos para calmarse y evitar herirse con las palabras.</p>";
+            } else if (combinedAvg >= 3.5) {
+                classText = "Alerta Temprana"; classColor = "bg-amber-500";
+                baseDiag = "<p>La relación está experimentando dificultades importantes en la reparación de los daños. Las peleas se vuelven cíclicas y están dejando una capa de rencor residual entre ambos que apaga la intimidad. <br><br><strong>Recomendación Principal:</strong> Instauren urgentemente la regla de 'Reparación a las 24 horas'. Tienen estrictamente prohibido dejar pasar más de un día sin disculparse o abordar cordialmente el roce de ayer.</p>";
+            } else if (combinedAvg >= 2.5) {
+                classText = "Tensión Estructural"; classColor = "bg-orange-500";
+                baseDiag = "<p>El hogar se está sintiendo más como una fuente principal de estrés que como un verdadero refugio. Hay un riesgo muy alto de estarse evadiendo mutuamente (el famoso muro de hielo o silencio prolongado). <br><br><strong>Recomendación Principal:</strong> Eliminen la crítica destructiva. A partir de hoy, transformen los reclamos en 'Quejas del Yo' (ej. en vez de gritar 'tú nunca limpias', decir 'yo me siento abrumado cuando la casa está sucia').</p>";
+            } else if (combinedAvg >= 1.5) {
+                classText = "Crisis Profunda"; classColor = "bg-red-500";
+                baseDiag = "<p>Existe un dolor emocional agudo y constante. La brecha de empatía es gigante y es probable que la relación se mantenga a flote únicamente por inercia, por temas económicos o por los hijos. <br><br><strong>Recomendación Principal:</strong> Consideren este resultado como una llamada de auxilio. Busquen terapia o asesoramiento matrimonial con urgencia. Un mediador profesional es vital para detener el daño mutuo antes de tomar decisiones definitivas.</p>";
             } else {
-                classText = "Crisis de Estructura (Crítico)"; classColor = "bg-rose-600";
-                baseDiag = "<p>Resultados críticos que indican desconexión severa o resentimiento acumulado. Es probable que la relación se mantenga por inercia logística o temor al cambio. Se recomienda enfáticamente buscar apoyo clínico profesional para sanar heridas, romper muros de comunicación o tomar decisiones saludables.</p>";
+                classText = "Desconexión Severa"; classColor = "bg-rose-700";
+                baseDiag = "<p>La relación se encuentra en un estado crítico, limitándose meramente a la supervivencia. La confianza, la admiración y la intimidad están profundamente comprometidas y el dolor se manifiesta en cada interacción. <br><br><strong>Recomendación Principal:</strong> La intervención clínica, profesional y directa es absolutamente imperativa en este momento. Se requiere de un compromiso incondicional de ambos para sanar o, en su defecto, para lograr una separación sana que no los destruya moral y físicamente.</p>";
             }
 
             safeSetText('res-classification', classText);
@@ -899,11 +1011,11 @@
             // Brecha de percepción
             const gapAlertDiv = document.getElementById('res-gap-alert');
             if (gapAlertDiv) {
-                if (gap <= 0.5) {
+                if (gap <= 0.8) {
                     gapAlertDiv.className = "p-5 rounded-xl border bg-emerald-50 border-emerald-200 flex gap-4 items-start w-full";
                     gapAlertDiv.innerHTML = `<div class="text-emerald-500 text-3xl"><i class="fa-solid fa-handshake-angle"></i></div>
                         <div><h4 class="font-bold text-emerald-900 text-lg mb-1">Visión Compartida</h4><p class="text-sm text-emerald-800">Tienen una brecha mínima (${gap} pts). Ambos perciben y experimentan la relación de manera muy similar, lo cual es el mejor cimiento para colaborar ante la adversidad.</p></div>`;
-                } else if (gap <= 1.5) {
+                } else if (gap <= 1.8) {
                     gapAlertDiv.className = "p-5 rounded-xl border bg-blue-50 border-blue-200 flex gap-4 items-start w-full";
                     gapAlertDiv.innerHTML = `<div class="text-blue-500 text-3xl"><i class="fa-solid fa-glasses"></i></div>
                         <div><h4 class="font-bold text-blue-900 text-lg mb-1">Diferencias de Rol</h4><p class="text-sm text-blue-800">Tienen una brecha de ${gap} pts. Es un margen normal de variabilidad; uno de ustedes está procesando más estrés en ciertas áreas. Revisen el desglose para ver en qué difieren sus opiniones.</p></div>`;
@@ -914,7 +1026,7 @@
                 }
             }
 
-            // Desglose de Pilares Individual (P1 vs P2 con línea MX) - Hoja 2
+            // Desglose de Pilares Individual (P1 vs P2 con línea MX)
             const pillarsContainer = document.getElementById('res-pillars-individual-container');
             let lowestPillarAvg = 11;
             let lowestPillarId = 1;
@@ -936,9 +1048,9 @@
                     let data = pilarData[i];
 
                     function getBarColor(score) {
-                        if(score >= 8) return 'bg-emerald-500';
+                        if(score >= 8.0) return 'bg-emerald-500';
                         if(score >= 6.5) return 'bg-blue-500';
-                        if(score >= 5) return 'bg-amber-500';
+                        if(score >= 5.0) return 'bg-amber-500';
                         return 'bg-rose-500';
                     }
 
@@ -984,9 +1096,9 @@
             if (lowestPillarAvg < 7.5) {
                 actionHtml = `
                     <h3 class="font-bold text-xl text-rose-800 mb-3 flex items-center border-b border-rose-100 pb-2">
-                        <i class="fa-solid fa-list-check mr-2"></i> Plan de Acción Inmediato: ${pName}
+                        <i class="fa-solid fa-list-check mr-2"></i> Plan de Enfoque Adicional: ${pName}
                     </h3>
-                    <p class="text-sm text-slate-600 mb-4">Hemos detectado que esta área es la más vulnerable en su relación actualmente. Para evitar el desgaste emocional, comiencen a implementar los siguientes 5 puntos esta misma semana:</p>
+                    <p class="text-sm text-slate-600 mb-4">Además de tu recomendación general de arriba, notamos que esta área en específico es la más vulnerable en tu relación. Intenta implementar estos pasos para fortalecer el pilar de <strong>${pName}</strong>:</p>
                     <ul class="space-y-3 text-sm text-slate-700">
                 `;
                 
@@ -1029,7 +1141,7 @@
                     <h3 class="font-bold text-xl text-emerald-800 mb-3 flex items-center border-b border-emerald-100 pb-2">
                         <i class="fa-solid fa-list-check mr-2"></i> Plan de Mantenimiento y Crecimiento
                     </h3>
-                    <p class="text-sm text-slate-600 mb-4">No presentan áreas en riesgo. Su dinámica está en un excelente nivel. Para blindar la relación contra la complacencia, apliquen estos 5 pasos de crecimiento:</p>
+                    <p class="text-sm text-slate-600 mb-4">Adicional a tu diagnóstico general, te confirmamos que no presentan áreas en riesgo crónico. Para blindar la relación contra la complacencia, apliquen estos 5 pasos de crecimiento:</p>
                     <ul class="space-y-3 text-sm text-slate-700">
                         <li class="flex items-start"><i class="fa-solid fa-star text-emerald-500 mt-1 mr-3"></i> <div><strong>1. Inyecten Novedad Constante:</strong> El cerebro se acostumbra a lo bueno. Aprendan una habilidad completamente nueva juntos al menos una vez al año (un idioma, baile, deporte).</div></li>
                         <li class="flex items-start"><i class="fa-solid fa-star text-emerald-500 mt-1 mr-3"></i> <div><strong>2. Mentoring Matrimonial:</strong> Conviértanse en mentores informales o guías de parejas más jóvenes. Enseñar lo que les funciona fortalece su propio vínculo.</div></li>
@@ -1046,7 +1158,7 @@
             const optOutCheckbox = document.getElementById('opt-out-research');
             if (optOutCheckbox && !optOutCheckbox.checked) {
                 const researchData = {
-                    origen: "IAC Test",
+                    origen: "IAC Test 40 Preguntas (Escala 10)",
                     fecha: new Date().toISOString(),
                     promedio_general: combinedAvg,
                     promedio_p1: avgP1,
@@ -1075,10 +1187,9 @@
         function sendSilentResearchData(data) {
             console.log("Enviando datos de investigación silenciosamente...");
             
-            // Aplanamos los datos para que el correo se lea mejor
             const flatData = {
                 _subject: "Nuevos Datos de Investigación IAC (Anónimo)",
-                _captcha: "false", // Evita que pida un captcha visual
+                _captcha: "false", 
                 _template: "table",
                 Fecha: data.fecha,
                 Promedio_General: data.promedio_general,
@@ -1107,7 +1218,6 @@
             .then(data => {
                 if (data.success === "false" || data.success === false) {
                     console.warn("FormSubmit requiere activación:", data.message);
-                    // Mostrar la alerta amarilla inmediatamente al calificar el test
                     const alertBox = document.getElementById('admin-activation-alert');
                     if(alertBox) alertBox.classList.remove('hidden');
                 } else {
@@ -1120,8 +1230,9 @@
         function resetTest() {
             state.answersP1 = {};
             state.answersP2 = {};
+            state.tempAnswers = {};
+            state.currentPage = 0;
             
-            // Reiniciar estado de alertas
             const alertBox = document.getElementById('admin-activation-alert');
             if(alertBox) alertBox.classList.add('hidden');
 
